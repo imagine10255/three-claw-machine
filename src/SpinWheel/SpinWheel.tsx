@@ -1,52 +1,75 @@
-import {useState} from 'react';
-import {Canvas} from '@react-three/fiber';
-import Group from './_components/Group.tsx';
-import Rive from './_components/Rive.tsx';
+import {Physics, useBox, usePlane, useSphere} from '@react-three/cannon';
+import {OrbitControls} from '@react-three/drei';
+import {Canvas, MeshProps, ThreeElements} from '@react-three/fiber';
+import {useEffect, useState} from 'react';
 import styled from 'styled-components';
-import {IApi, TTargetIndex} from './types.ts';
-import {mergeArrays} from './utils.ts';
+import {Vector3} from 'three';
 
-interface IProps {
-    data: IApi[],
-    target: TTargetIndex,
-    times?: number,
+// 型別定義
+interface ClawProps {
+    position?: Vector3
+    isGrabbing: boolean
 }
 
-function SpinWheel ({
-    data,
-    target,
-    times,
-}: IProps) {
-    const [isRotate, setIsRotate] = useState(false);
-    const [targetIndex, setTargetIndex] = useState<TTargetIndex>(0);
+interface DollProps {
+    position: [number, number, number]
+}
+
+type ClawPosition = [number, number, number];
+function Plane(props: any) {
+    const [ref] = usePlane<any>(() => ({ rotation: [-Math.PI / 2, 0, 0], ...props }))
+    return (
+        <mesh ref={ref}>
+            <planeGeometry args={[100, 100]} />
+        </mesh>
+    )
+}
+
+function Cube(props: any) {
+    const [ref] = useBox<any>(() => ({ mass: 1, position: [0, 5, 0], ...props }))
+    return (
+        <mesh ref={ref}>
+            <boxGeometry />
+        </mesh>
+    )
+}
+
+// 主遊戲組件
+const Game: React.FC = () => {
+    const [isGrabbing, setIsGrabbing] = useState<boolean>(false);
+
+    // 生成隨機娃娃位置
+    const dollPositions: [number, number, number][] = [
+        [1, 0, 0],
+        [-1, 0, 1],
+        [0, 0, -1],
+        [2, 0, 1],
+        [-2, 0, -1],
+    ];
 
     return (
-        <>
-            <Container>
-                {/* three js */}
-                <Canvas >
-                    <Group isRotate={isRotate} targetIndex={targetIndex} data={mergeArrays(data)} times={times}/>
-                </Canvas>
-
-                {/* rive */}
-                <Rive
-                    handleOnSpin={() => setIsRotate(true)}
-                    handleOnPressed={() => setTargetIndex(target)}
-                />
-            </Container>
-
-            {/* demo */}
-            {isRotate && <p style={{textAlign: 'center', position: 'fixed', top: '10px', width: '100vw'}}>獎品會落在第{targetIndex}個</p>}
-        </>
+        <GameContainer>
+            <Canvas camera={{ position: [0, 5, 5], fov: 75 }}>
+                <ambientLight intensity={0.5} />
+                <pointLight position={[10, 10, 10]} />
+                <OrbitControls />
+                <Physics>
+                    <Plane />
+                    <Cube />
+                </Physics>
+            </Canvas>
+        </GameContainer>
     );
-}
+};
 
-export default SpinWheel;
+export default Game;
 
-const Container = styled.div`
-    margin: 0 auto;
-    position: relative;
-    width: min(100vh, 100%); // demo
-    aspect-ratio: 1;
-    border: 1px solid red;
+
+
+// 遊戲場景容器樣式
+const GameContainer = styled.div`
+  width: 100vw;
+  height: 100vh;
+  background: #000;
 `;
+

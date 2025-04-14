@@ -1,3 +1,3 @@
-import ClawMachine from './SpinWheel';
+import ClawMachine from './ClawMachine';
 
 export default ClawMachine;

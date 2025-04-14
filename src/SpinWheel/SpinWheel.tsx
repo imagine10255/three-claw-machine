@@ -150,12 +150,7 @@ function Claw({position, isGrabbing, onPositionChange}: ClawProps) {
         {position: [0, base2Y, 0] as [number, number, number], args: [0.8, 1, 0.8] as [number, number, number]},
     ]
 
-    useFrame(() => {
-        // if (baseRef.current) {
-        //     const currentPosition = baseRef.current.position
-        //     onPositionChange([currentPosition.x, currentPosition.y, currentPosition.z])
-        // }
-    })
+
 
     return (
         <>
@@ -166,7 +161,7 @@ function Claw({position, isGrabbing, onPositionChange}: ClawProps) {
             </mesh>
             
             {/* 爪子主体 */}
-            <group ref={baseRef} position={[position[0], position[1], position[2]]}>
+            <group  position={[position[0], position[1], position[2]]}>
                 {/* 爪子基座 */}
                 <primitive object={baseBody} />
                 <mesh position={[0, baseY, 0]} castShadow>
@@ -252,7 +247,7 @@ function GameInfo({dolls, caught}: {dolls: number, caught: number}) {
 
 // 主遊戲組件
 const ClawMachine: React.FC<Props> = ({data}) => {
-    const [clawPosition, setClawPosition] = useState<[number, number, number]>([0, 30, 0])
+    const [clawPosition, setClawPosition] = useState<[number, number, number]>([0, 4, 0])
     const [isGrabbing, setIsGrabbing] = useState<boolean>(false)
     const [caughtDolls, setCaughtDolls] = useState<number>(0)
     const moveSpeed = 1
@@ -306,6 +301,7 @@ const ClawMachine: React.FC<Props> = ({data}) => {
     }, [isGrabbing]); // 只依赖isGrabbing状态
 
     const handleMove = (direction: string) => {
+        console.log('xxx');
         setClawPosition(prevPosition => {
             let [x, y, z] = prevPosition;
             switch (direction) {
@@ -418,6 +414,10 @@ const ClawMachine: React.FC<Props> = ({data}) => {
 }
 
 export default ClawMachine
+
+
+
+
 
 const GameContainer = styled.div`
     width: 100%;

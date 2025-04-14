@@ -1,3 +1,3 @@
-import SpinWheel from './SpinWheel.tsx'
+import ClawMachine from './SpinWheel';
 
-export default SpinWheel;
+export default ClawMachine;

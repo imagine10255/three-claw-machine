@@ -1,4 +1,4 @@
-import SpinWheel from './SpinWheel';
+import ClawMachine from './SpinWheel';
 import {IApi, TTargetIndex} from './SpinWheel/types.ts';
 
 
@@ -40,5 +40,5 @@ const target: TTargetIndex = 1; // 目標
 const times = 1; // 圈數
 
 export default function App() {
-    return <SpinWheel data={input} target={target} times={times}/>;
+    return <ClawMachine data={input} target={target} times={times}/>;
 }

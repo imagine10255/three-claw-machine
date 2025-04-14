@@ -151,10 +151,10 @@ function Claw({position, isGrabbing, onPositionChange}: ClawProps) {
     ]
 
     useFrame(() => {
-        if (baseRef.current) {
-            const currentPosition = baseRef.current.position
-            onPositionChange([currentPosition.x, currentPosition.y, currentPosition.z])
-        }
+        // if (baseRef.current) {
+        //     const currentPosition = baseRef.current.position
+        //     onPositionChange([currentPosition.x, currentPosition.y, currentPosition.z])
+        // }
     })
 
     return (
@@ -166,7 +166,7 @@ function Claw({position, isGrabbing, onPositionChange}: ClawProps) {
             </mesh>
             
             {/* 爪子主体 */}
-            <group ref={baseRef}>
+            <group ref={baseRef} position={[position[0], position[1], position[2]]}>
                 {/* 爪子基座 */}
                 <primitive object={baseBody} />
                 <mesh position={[0, baseY, 0]} castShadow>

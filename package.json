@@ -17,6 +17,7 @@
     "@types/three": "^0.175.0",
     "framer-motion": "^10.16.16",
     "framer-motion-3d": "^10.16.16",
+    "nipplejs": "^0.10.2",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "styled-components": "^6.1.1",

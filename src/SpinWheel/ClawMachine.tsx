@@ -10,6 +10,7 @@ import Walls from "./Wall.tsx";
 import Base from "./Base.tsx";
 import GameInfo from "./GameInfo.tsx";
 import ControlPanel from "./ControlPanel.tsx";
+import VirtualJoystick from './VirtualJoystick.tsx';
 
 interface Props {
     data: IApi[]
@@ -22,8 +23,11 @@ const ClawMachine: React.FC<Props> = ({ data }) => {
     const [clawPosition, setClawPosition] = useState<[number, number, number]>([0, 0, 0])
     const [isGrabbing, setIsGrabbing] = useState<boolean>(false)
     const [caughtDolls, setCaughtDolls] = useState<number>(0)
-    const moveSpeed = 1
+    const moveSpeed = 0.2  // 調整移動速度
     const clawRef = useRef<any>(null);
+    const keysPressed = useRef<Set<string>>(new Set());
+    const moveInterval = useRef<number | null>(null);
+    const currentDirection = useRef<string | null>(null);
 
     const dollColors = ['red', 'blue', 'green', 'yellow', 'purple', 'orange']
     // 调整娃娃位置，让娃娃站在平台上
@@ -38,43 +42,83 @@ const ClawMachine: React.FC<Props> = ({ data }) => {
         [-7, 2, 0],
     ]
 
-    // 修改键盘事件处理
     useEffect(() => {
         const handleKeyDown = (e: KeyboardEvent) => {
-            e.preventDefault(); // 防止默认行为
-            switch (e.key) {
+            e.preventDefault();
+            if (!keysPressed.current.has(e.key)) {
+                keysPressed.current.add(e.key);
+                startMoving(getDirectionFromKey(e.key));
+            }
+        };
+
+        const handleKeyUp = (e: KeyboardEvent) => {
+            keysPressed.current.delete(e.key);
+            if (keysPressed.current.size === 0) {
+                stopMoving();
+            } else {
+                // 如果還有其他按鍵被按著，繼續移動最後一個方向
+                const lastKey = Array.from(keysPressed.current).pop();
+                if (lastKey) {
+                    startMoving(getDirectionFromKey(lastKey));
+                }
+            }
+        };
+
+        const getDirectionFromKey = (key: string): string => {
+            switch (key) {
                 case 'ArrowUp':
                 case 'w':
                 case 'W':
-                    handleMove('forward');
-                    break;
+                    return 'forward';
                 case 'ArrowDown':
                 case 's':
                 case 'S':
-                    handleMove('backward');
-                    break;
+                    return 'backward';
                 case 'ArrowLeft':
                 case 'a':
                 case 'A':
-                    handleMove('left');
-                    break;
+                    return 'left';
                 case 'ArrowRight':
                 case 'd':
                 case 'D':
-                    handleMove('right');
-                    break;
-                case ' ':
-                    handleGrab();
-                    break;
+                    return 'right';
+                default:
+                    return '';
             }
         };
 
         window.addEventListener('keydown', handleKeyDown);
-        return () => window.removeEventListener('keydown', handleKeyDown);
-    }, [isGrabbing]); // 只依赖isGrabbing状态
+        window.addEventListener('keyup', handleKeyUp);
+        
+        return () => {
+            window.removeEventListener('keydown', handleKeyDown);
+            window.addEventListener('keyup', handleKeyUp);
+            stopMoving();
+        };
+    }, []);
+
+    const startMoving = (direction: string) => {
+        if (!direction) return;
+        currentDirection.current = direction;
+        
+        if (moveInterval.current === null) {
+            moveInterval.current = window.setInterval(() => {
+                if (currentDirection.current) {
+                    handleMove(currentDirection.current);
+                }
+            }, 16); // 約60fps
+        }
+    };
+
+    const stopMoving = () => {
+        if (moveInterval.current !== null) {
+            window.clearInterval(moveInterval.current);
+            moveInterval.current = null;
+        }
+        currentDirection.current = null;
+    };
 
     const handleMove = (direction: string) => {
-        console.log('direction', direction);
         setClawPosition(prevPosition => {
             let [x, y, z] = prevPosition;
             switch (direction) {
@@ -167,6 +211,17 @@ const ClawMachine: React.FC<Props> = ({ data }) => {
                 />
                 {renderKeyboardControls()}
             </UIContainer>
+
+            <JoystickContainer>
+                <VirtualJoystick 
+                    onMove={(direction) => {
+                        startMoving(direction);
+                    }}
+                    onMoveEnd={() => {
+                        stopMoving();
+                    }}
+                />
+            </JoystickContainer>
         </GameContainer>
     )
 }
@@ -278,3 +333,11 @@ const UIContainer = styled.div`
         }
     }
 `
+
+const JoystickContainer = styled.div`
+    position: fixed;
+    bottom: 100px;
+    right: 100px;
+    z-index: 1000;
+    pointer-events: auto;
+`;

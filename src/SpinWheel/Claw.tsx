@@ -69,44 +69,28 @@ const Claw = ({
         { position: [0, base2Y, 0] as [number, number, number], args: [0.8, 1, 0.8] as [number, number, number] },
     ]
 
+    const currentPosition = useRef<THREE.Vector3>(new THREE.Vector3(position[0], position[1], position[2]));
+
     useFrame((state, delta) => {
         if (!baseRef.current || !cableRef.current) return;
 
-        const currentY = baseRef.current.position.y;
         const speed = 5;
         const step = speed * delta;
 
-        if (Math.abs(currentY - targetY) > 0.01) {
-            if (currentY < targetY) {
-                baseRef.current.position.y = Math.min(currentY + step, targetY);
-            } else {
-                baseRef.current.position.y = Math.max(currentY - step, targetY);
-            }
-        }
+        currentPosition.current.lerp(new THREE.Vector3(position[0], position[1], position[2]), 0.1);
 
-
+        baseRef.current.position.copy(currentPosition.current);
         cableRef.current.position.set(
-            position[0],
-            position[1] + 20.5,
-            position[2]
-        );
-        baseRef.current.position.set(
-            position[0],
-            position[1],
-            position[2]
+            currentPosition.current.x,
+            currentPosition.current.y + 12.5,
+            currentPosition.current.z
         );
 
-
-        // baseRef.current.position.x = position[0];
-        // baseRef.current.position.z = position[2];
-
-        // cableRef.current.position.set(
-        //     position[0],
-        //     baseRef.current.position.y + 12.5,
-        //     position[2]
-        // );
-
-        // onPositionChange([baseRef.current.position.x, baseRef.current.position.y, baseRef.current.position.z]);
+        // onPositionChange([
+        //     baseRef.current.position.x,
+        //     baseRef.current.position.y,
+        //     baseRef.current.position.z
+        // ]);
     });
 
     // useImperativeHandle(ref, () => ({

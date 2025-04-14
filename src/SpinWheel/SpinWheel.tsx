@@ -247,7 +247,7 @@ function GameInfo({dolls, caught}: {dolls: number, caught: number}) {
 
 // 主遊戲組件
 const ClawMachine: React.FC<Props> = ({data}) => {
-    const [clawPosition, setClawPosition] = useState<[number, number, number]>([0, 4, 0])
+    const [clawPosition, setClawPosition] = useState<[number, number, number]>([0, 0, 0])
     const [isGrabbing, setIsGrabbing] = useState<boolean>(false)
     const [caughtDolls, setCaughtDolls] = useState<number>(0)
     const moveSpeed = 1
@@ -340,7 +340,7 @@ const ClawMachine: React.FC<Props> = ({data}) => {
             }
         } else {
             // 开始抓取，爪子下降到娃娃高度上方一点
-            setClawPosition([clawPosition[0], 3, clawPosition[2]])
+            setClawPosition([clawPosition[0], -5, clawPosition[2]])
         }
     }
 

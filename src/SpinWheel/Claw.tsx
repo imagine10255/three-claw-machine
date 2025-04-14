@@ -1,8 +1,8 @@
-
 // 爪子组件
-import {useRef} from "react";
+import {useRef, useState, useImperativeHandle, forwardRef, ForwardedRef} from "react";
 import * as THREE from "three";
-import {useBox} from "@react-three/cannon";
+import { useBox } from "@react-three/cannon";
+import {MeshProps, useFrame} from "@react-three/fiber";
 
 // 型別定義
 interface ClawProps {
@@ -11,10 +11,14 @@ interface ClawProps {
     onPositionChange: (position: [number, number, number]) => void
 }
 
-
-
-function Claw({position, isGrabbing, onPositionChange}: ClawProps) {
-    const baseRef = useRef<THREE.Group>(null)
+const Claw = ({
+      position,
+      isGrabbing,
+      onPositionChange
+}: ClawProps, ref: ForwardedRef<MeshProps>) => {
+    const baseRef = useRef<THREE.Group>(null);
+    const cableRef = useRef<THREE.Mesh>(null);
+    const [targetY, setTargetY] = useState(position[1]);
     const [baseBody, baseApi] = useBox(() => ({
         mass: 1,
         position,
@@ -24,8 +28,7 @@ function Claw({position, isGrabbing, onPositionChange}: ClawProps) {
         onCollide: (e) => {
             console.log('Claw collided', e)
         }
-    }))
-
+    }));
 
     const baseY = 10;
     const base2Y = 8;
@@ -37,47 +40,94 @@ function Claw({position, isGrabbing, onPositionChange}: ClawProps) {
     // 爪子手臂 - 更加复杂的结构
     const armProps = isGrabbing ? [
         // 爪子内侧位置 (抓取状态)
-        {position: [0.8, base2Y, 0.8] as [number, number, number], args: [0.4, 2.5, 0.4] as [number, number, number], rotation: [0, 0, 0.3] as [number, number, number]},
-        {position: [-0.8, base2Y, 0.8] as [number, number, number], args: [0.4, 2.5, 0.4] as [number, number, number], rotation: [0, 0, -0.3] as [number, number, number]},
-        {position: [0.8, base2Y, -0.8] as [number, number, number], args: [0.4, 2.5, 0.4] as [number, number, number], rotation: [0, 0, 0.3] as [number, number, number]},
-        {position: [-0.8, base2Y, -0.8] as [number, number, number], args: [0.4, 2.5, 0.4] as [number, number, number], rotation: [0, 0, -0.3] as [number, number, number]},
+        { position: [0.8, base2Y, 0.8] as [number, number, number], args: [0.4, 2.5, 0.4] as [number, number, number], rotation: [0, 0, 0.3] as [number, number, number] },
+        { position: [-0.8, base2Y, 0.8] as [number, number, number], args: [0.4, 2.5, 0.4] as [number, number, number], rotation: [0, 0, -0.3] as [number, number, number] },
+        { position: [0.8, base2Y, -0.8] as [number, number, number], args: [0.4, 2.5, 0.4] as [number, number, number], rotation: [0, 0, 0.3] as [number, number, number] },
+        { position: [-0.8, base2Y, -0.8] as [number, number, number], args: [0.4, 2.5, 0.4] as [number, number, number], rotation: [0, 0, -0.3] as [number, number, number] },
 
         // 爪子尖端 (抓取状态)
-        {position: [1, base2Y, 1] as [number, number, number], args: [0.3, 0.8, 0.3] as [number, number, number], rotation: [0, 0, 0.5] as [number, number, number]},
-        {position: [-1, base2Y, 1] as [number, number, number], args: [0.3, 0.8, 0.3] as [number, number, number], rotation: [0, 0, -0.5] as [number, number, number]},
-        {position: [1, base2Y, -1] as [number, number, number], args: [0.3, 0.8, 0.3] as [number, number, number], rotation: [0, 0, 0.5] as [number, number, number]},
-        {position: [-1, base2Y, -1] as [number, number, number], args: [0.3, 0.8, 0.3] as [number, number, number], rotation: [0, 0, -0.5] as [number, number, number]},
+        { position: [1, base2Y, 1] as [number, number, number], args: [0.3, 0.8, 0.3] as [number, number, number], rotation: [0, 0, 0.5] as [number, number, number] },
+        { position: [-1, base2Y, 1] as [number, number, number], args: [0.3, 0.8, 0.3] as [number, number, number], rotation: [0, 0, -0.5] as [number, number, number] },
+        { position: [1, base2Y, -1] as [number, number, number], args: [0.3, 0.8, 0.3] as [number, number, number], rotation: [0, 0, 0.5] as [number, number, number] },
+        { position: [-1, base2Y, -1] as [number, number, number], args: [0.3, 0.8, 0.3] as [number, number, number], rotation: [0, 0, -0.5] as [number, number, number] },
     ] : [
         // 爪子外侧位置 (松开状态)
-        {position: [1.5, base2Y, 1.5] as [number, number, number], args: [0.4, 2.5, 0.4] as [number, number, number], rotation: [0, 0, 0.6] as [number, number, number]},
-        {position: [-1.5, base2Y, 1.5] as [number, number, number], args: [0.4, 2.5, 0.4] as [number, number, number], rotation: [0, 0, -0.6] as [number, number, number]},
-        {position: [1.5, base2Y, -1.5] as [number, number, number], args: [0.4, 2.5, 0.4] as [number, number, number], rotation: [0, 0, 0.6] as [number, number, number]},
-        {position: [-1.5, base2Y, -1.5] as [number, number, number], args: [0.4, 2.5, 0.4] as [number, number, number], rotation: [0, 0, -0.6] as [number, number, number]},
+        { position: [1.5, base2Y, 1.5] as [number, number, number], args: [0.4, 2.5, 0.4] as [number, number, number], rotation: [0, 0, 0.6] as [number, number, number] },
+        { position: [-1.5, base2Y, 1.5] as [number, number, number], args: [0.4, 2.5, 0.4] as [number, number, number], rotation: [0, 0, -0.6] as [number, number, number] },
+        { position: [1.5, base2Y, -1.5] as [number, number, number], args: [0.4, 2.5, 0.4] as [number, number, number], rotation: [0, 0, 0.6] as [number, number, number] },
+        { position: [-1.5, base2Y, -1.5] as [number, number, number], args: [0.4, 2.5, 0.4] as [number, number, number], rotation: [0, 0, -0.6] as [number, number, number] },
 
         // 爪子尖端 (松开状态)
-        {position: [2.2, base2Y, 2.2] as [number, number, number], args: [0.3, 0.8, 0.3] as [number, number, number], rotation: [0, 0, 0.8] as [number, number, number]},
-        {position: [-2.2, base2Y, 2.2] as [number, number, number], args: [0.3, 0.8, 0.3] as [number, number, number], rotation: [0, 0, -0.8] as [number, number, number]},
-        {position: [2.2, base2Y, -2.2] as [number, number, number], args: [0.3, 0.8, 0.3] as [number, number, number], rotation: [0, 0, 0.8] as [number, number, number]},
-        {position: [-2.2, base2Y, -2.2] as [number, number, number], args: [0.3, 0.8, 0.3] as [number, number, number], rotation: [0, 0, -0.8] as [number, number, number]},
+        { position: [2.2, base2Y, 2.2] as [number, number, number], args: [0.3, 0.8, 0.3] as [number, number, number], rotation: [0, 0, 0.8] as [number, number, number] },
+        { position: [-2.2, base2Y, 2.2] as [number, number, number], args: [0.3, 0.8, 0.3] as [number, number, number], rotation: [0, 0, -0.8] as [number, number, number] },
+        { position: [2.2, base2Y, -2.2] as [number, number, number], args: [0.3, 0.8, 0.3] as [number, number, number], rotation: [0, 0, 0.8] as [number, number, number] },
+        { position: [-2.2, base2Y, -2.2] as [number, number, number], args: [0.3, 0.8, 0.3] as [number, number, number], rotation: [0, 0, -0.8] as [number, number, number] },
     ]
 
     // 爪子连接部件
     const connectorProps = [
-        {position: [0, base2Y, 0] as [number, number, number], args: [0.8, 1, 0.8] as [number, number, number]},
+        { position: [0, base2Y, 0] as [number, number, number], args: [0.8, 1, 0.8] as [number, number, number] },
     ]
 
+    useFrame((state, delta) => {
+        if (!baseRef.current || !cableRef.current) return;
 
+        const currentY = baseRef.current.position.y;
+        const speed = 5;
+        const step = speed * delta;
+
+        if (Math.abs(currentY - targetY) > 0.01) {
+            if (currentY < targetY) {
+                baseRef.current.position.y = Math.min(currentY + step, targetY);
+            } else {
+                baseRef.current.position.y = Math.max(currentY - step, targetY);
+            }
+        }
+
+
+        cableRef.current.position.set(
+            position[0],
+            position[1] + 20.5,
+            position[2]
+        );
+        baseRef.current.position.set(
+            position[0],
+            position[1],
+            position[2]
+        );
+
+
+        // baseRef.current.position.x = position[0];
+        // baseRef.current.position.z = position[2];
+
+        // cableRef.current.position.set(
+        //     position[0],
+        //     baseRef.current.position.y + 12.5,
+        //     position[2]
+        // );
+
+        // onPositionChange([baseRef.current.position.x, baseRef.current.position.y, baseRef.current.position.z]);
+    });
+
+    // useImperativeHandle(ref, () => ({
+    //     grab() {
+    //         setTargetY(2); // 下降
+    //         setTimeout(() => {
+    //             setTargetY(12); // 上升
+    //         }, 1000);
+    //     }
+    // }));
 
     return (
         <>
             {/* 爪子吊绳 - 总是从顶部垂下 */}
-            <mesh position={[position[0], position[1] + 20, position[2]]} castShadow>
+            <mesh ref={cableRef} castShadow>
                 <cylinderGeometry args={[cableThickness, cableThickness, cableHeight, 12]} />
                 <meshStandardMaterial color="#222222" />
             </mesh>
 
             {/* 爪子主体 */}
-            <group  position={[position[0], position[1], position[2]]}>
+            <group ref={baseRef}>
                 {/* 爪子基座 */}
                 <primitive object={baseBody} />
                 <mesh position={[0, baseY, 0]} castShadow>
@@ -108,8 +158,6 @@ function Claw({position, isGrabbing, onPositionChange}: ClawProps) {
             </group>
         </>
     )
-}
+};
 
-
-
-export default Claw;
+export default forwardRef(Claw);

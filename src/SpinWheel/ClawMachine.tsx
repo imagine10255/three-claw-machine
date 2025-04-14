@@ -1,9 +1,9 @@
-import {Physics} from '@react-three/cannon';
-import {OrbitControls} from '@react-three/drei';
-import {Canvas} from '@react-three/fiber';
-import {useEffect, useState} from 'react';
+import { Physics } from '@react-three/cannon';
+import { OrbitControls } from '@react-three/drei';
+import { Canvas } from '@react-three/fiber';
+import { useEffect, useRef, useState } from 'react';
 import styled from 'styled-components';
-import {IApi, TTargetIndex} from './types';
+import { IApi, TTargetIndex } from './types';
 import Doll from "./Doll.tsx";
 import Claw from "./Claw.tsx";
 import Walls from "./Wall.tsx";
@@ -11,26 +11,19 @@ import Base from "./Base.tsx";
 import GameInfo from "./GameInfo.tsx";
 import ControlPanel from "./ControlPanel.tsx";
 
-
-
-
 interface Props {
     data: IApi[]
     target: TTargetIndex
     times: number
 }
 
-
-
-
-
-
 // 主遊戲組件
-const ClawMachine: React.FC<Props> = ({data}) => {
+const ClawMachine: React.FC<Props> = ({ data }) => {
     const [clawPosition, setClawPosition] = useState<[number, number, number]>([0, 0, 0])
     const [isGrabbing, setIsGrabbing] = useState<boolean>(false)
     const [caughtDolls, setCaughtDolls] = useState<number>(0)
     const moveSpeed = 1
+    const clawRef = useRef<any>(null);
 
     const dollColors = ['red', 'blue', 'green', 'yellow', 'purple', 'orange']
     // 调整娃娃位置，让娃娃站在平台上
@@ -49,7 +42,7 @@ const ClawMachine: React.FC<Props> = ({data}) => {
     useEffect(() => {
         const handleKeyDown = (e: KeyboardEvent) => {
             e.preventDefault(); // 防止默认行为
-            switch(e.key) {
+            switch (e.key) {
                 case 'ArrowUp':
                 case 'w':
                 case 'W':
@@ -81,6 +74,7 @@ const ClawMachine: React.FC<Props> = ({data}) => {
     }, [isGrabbing]); // 只依赖isGrabbing状态
 
     const handleMove = (direction: string) => {
+        console.log('direction', direction);
         setClawPosition(prevPosition => {
             let [x, y, z] = prevPosition;
             switch (direction) {
@@ -102,26 +96,10 @@ const ClawMachine: React.FC<Props> = ({data}) => {
     };
 
     const handleGrab = () => {
-        setIsGrabbing(!isGrabbing)
-        if (isGrabbing) {
-            // 抓取结束，爪子上升到最高位置
-            setClawPosition([clawPosition[0], 30, clawPosition[2]])
-            
-            // 检查是否有娃娃在爪子下方，简单模拟
-            const dollNearClaw = dollPositions.some(pos => {
-                const dx = Math.abs(pos[0] - clawPosition[0])
-                const dz = Math.abs(pos[2] - clawPosition[2])
-                return dx < 2 && dz < 2
-            })
-            
-            if (dollNearClaw && Math.random() > 0.5) {
-                setCaughtDolls(prev => prev + 1)
-            }
-        } else {
-            // 开始抓取，爪子下降到娃娃高度上方一点
-            setClawPosition([clawPosition[0], -5, clawPosition[2]])
+        if (clawRef.current) {
+            clawRef.current.grab();
         }
-    }
+    };
 
     const handleClawPositionChange = (newPosition: [number, number, number]) => {
         // 更新爪子位置，但限制在娃娃机范围内
@@ -140,7 +118,7 @@ const ClawMachine: React.FC<Props> = ({data}) => {
 
     return (
         <GameContainer>
-            <Canvas shadows camera={{position: [20, 20, 20], fov: 50}}>
+            <Canvas shadows camera={{ position: [20, 20, 20], fov: 50 }}>
                 <color attach="background" args={['#87CEEB']} />
                 <ambientLight intensity={0.7} />
                 <pointLight position={[10, 15, 10]} intensity={1.2} castShadow />
@@ -152,17 +130,18 @@ const ClawMachine: React.FC<Props> = ({data}) => {
                     shadow-mapSize-height={1024}
                 />
                 <OrbitControls makeDefault />
-                
+
                 <Physics>
                     {/*<Floor />*/}
                     <Base />
                     <Walls />
                     <Claw
+                        ref={clawRef}
                         position={clawPosition}
                         isGrabbing={isGrabbing}
                         onPositionChange={handleClawPositionChange}
                     />
-                    
+
                     {dollPositions.map((position, index) => (
                         <Doll
                             key={index}
@@ -172,18 +151,18 @@ const ClawMachine: React.FC<Props> = ({data}) => {
                         />
                     ))}
                 </Physics>
-                
+
                 <gridHelper args={[30, 30]} position={[0, -1.9, 0]} />
             </Canvas>
 
             <UIContainer>
                 <ControlPanel
-                    onMove={handleMove} 
-                    onGrab={handleGrab} 
+                    onMove={handleMove}
+                    onGrab={handleGrab}
                     isGrabbing={isGrabbing}
                 />
-                <GameInfo 
-                    dolls={dollPositions.length} 
+                <GameInfo
+                    dolls={dollPositions.length}
                     caught={caughtDolls}
                 />
                 {renderKeyboardControls()}
@@ -193,10 +172,6 @@ const ClawMachine: React.FC<Props> = ({data}) => {
 }
 
 export default ClawMachine
-
-
-
-
 
 const GameContainer = styled.div`
     width: 100%;
@@ -213,14 +188,14 @@ const UIContainer = styled.div`
     flex-direction: column;
     align-items: flex-start;
     pointer-events: none;
-    
+
     .controls {
         display: flex;
         flex-direction: column;
         align-items: center;
         margin-bottom: 10px;
         pointer-events: auto;
-        
+
         .d-pad {
             display: grid;
             grid-template-columns: repeat(3, 60px);
@@ -230,7 +205,7 @@ const UIContainer = styled.div`
                 "left . right"
                 ". down .";
             margin-bottom: 10px;
-            
+
             button {
                 width: 60px;
                 height: 60px;
@@ -240,11 +215,11 @@ const UIContainer = styled.div`
                 border: none;
                 font-size: 18px;
                 cursor: pointer;
-                
+
                 &:hover {
                     background: #555;
                 }
-                
+
                 &:nth-child(1) {
                     grid-area: up;
                 }
@@ -259,7 +234,7 @@ const UIContainer = styled.div`
                 }
             }
         }
-        
+
         .grab-btn {
             width: 120px;
             height: 60px;
@@ -269,13 +244,13 @@ const UIContainer = styled.div`
             border: none;
             font-size: 20px;
             cursor: pointer;
-            
+
             &:hover {
                 background: #ff6666;
             }
         }
     }
-    
+
     .game-info {
         background: rgba(0, 0, 0, 0.5);
         color: white;
@@ -284,12 +259,12 @@ const UIContainer = styled.div`
         font-size: 18px;
         pointer-events: auto;
         margin-bottom: 10px;
-        
+
         p {
             margin: 5px 0;
         }
     }
-    
+
     .keyboard-controls {
         background: rgba(0, 0, 0, 0.5);
         color: white;
@@ -297,10 +272,9 @@ const UIContainer = styled.div`
         border-radius: 10px;
         font-size: 16px;
         pointer-events: auto;
-        
+
         p {
             margin: 5px 0;
         }
     }
 `
-

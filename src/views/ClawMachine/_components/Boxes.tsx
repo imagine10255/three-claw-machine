@@ -26,7 +26,6 @@ const Boxes = ({
         () => ({
             args,
             mass: 1,
-
             position: [
                 (Math.random() - 0.5) * 10,
                 Math.random() * 5 + 2,
@@ -34,6 +33,12 @@ const Boxes = ({
             ],
             userData: {
                 tag: 'box'
+            },
+            allowSleep: false,
+            collisionResponse: true,
+            material: {
+                friction: 0.3,
+                restitution: 0.3
             }
         }),
         useRef<InstancedMesh>(null),

@@ -13,7 +13,10 @@ const Plane = () => {
         mass: 0,
         position: [0, 0, 0],
         args,
-        type: 'Static'
+        type: 'Static',
+        userData: {
+            tag: 'plane'
+        },
     }));
 
     return (

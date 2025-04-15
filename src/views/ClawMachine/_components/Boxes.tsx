@@ -32,6 +32,9 @@ const Boxes = ({
                 Math.random() * 5 + 2,
                 (Math.random() - 0.5) * 10
             ],
+            userData: {
+                tag: 'box'
+            }
         }),
         useRef<InstancedMesh>(null),
     );

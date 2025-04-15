@@ -10,7 +10,7 @@ import Text from '../Text';
 
 
 /**
- * Paddle
+ * Paddle 球拍
  */
 const Paddle = () => {
     const {nodes, materials} = useGLTF('/static/glb/pingpong.glb', '/static/glb/draco-gltf/') as PingPongGLTF;

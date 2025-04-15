@@ -69,7 +69,10 @@ const Wall = ({
         mass: 0,
         position,
         args,
-        type: 'Static'
+        type: 'Static',
+        userData: {
+            tag: 'wall'
+        },
     }));
 
     return (

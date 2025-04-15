@@ -1,16 +1,14 @@
-import {PlaneProps, usePlane, useSphere} from '@react-three/cannon';
-import {useFrame} from '@react-three/fiber';
+import {PlaneProps, usePlane} from '@react-three/cannon';
 import {useRef} from 'react';
-import type {InstancedMesh, Mesh} from 'three';
+import type {Mesh} from 'three';
 
-import {InstancedGeometryProps} from '@/views/DemoCubeHeap/types';
 
 
 /**
  * Plane
  * @param props
  */
-export function Plane(props: PlaneProps) {
+const Plane = (props: PlaneProps) => {
     const [ref] = usePlane(() => ({...props}), useRef<Mesh>(null));
     return (
         <mesh ref={ref} receiveShadow>
@@ -18,8 +16,8 @@ export function Plane(props: PlaneProps) {
             <shadowMaterial color="#171717" />
         </mesh>
     );
-}
+};
 
 
-
+export default Plane;
 

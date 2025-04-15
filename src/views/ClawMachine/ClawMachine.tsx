@@ -3,17 +3,17 @@ import {OrbitControls} from '@react-three/drei';
 import {Canvas} from '@react-three/fiber';
 import {useEffect, useMemo, useRef, useState} from 'react';
 import styled from 'styled-components';
+import {Color} from 'three';
 
-import Base from './_components/Base';
+import Boxes from '@/views/ClawMachine/_components/Boxes';
+
 import Claw, {IClawRefProps} from './_components/Claw';
 import ControlPanel from './_components/ControlPanel';
-import Doll from './_components/Doll';
 import GameInfo from './_components/GameInfo';
+import Plane from './_components/Plane';
 import VirtualJoystick from './_components/VirtualJoystick';
 import Walls from './_components/Wall';
 import {IApi, TTargetIndex} from './types';
-import Boxes from "@/views/ClawMachine/_components/Boxes";
-import {Color} from "three";
 const niceColors = ['#99b898', '#fecea8', '#ff847c', '#e84a5f', '#2a363b'];
 
 interface Props {
@@ -178,11 +178,10 @@ const ClawMachine = () => {
     return (
         <GameContainer>
             <Canvas
-                camera={{fov: 50, position: [-1, 1, 2.5]}}
-                onCreated={({scene}) => (scene.background = new Color('lightblue'))}
+                camera={{fov: 50, position: [12, 5, 12]}}
                 shadows
             >
-                <color attach="background" args={['#87CEEB']} />
+                <color attach="background" args={['lightblue']} />
                 <ambientLight intensity={0.7} />
                 <pointLight position={[10, 15, 10]} intensity={1.2} castShadow />
                 <directionalLight
@@ -194,8 +193,10 @@ const ClawMachine = () => {
                 />
                 <OrbitControls makeDefault />
 
+
+
                 <Physics>
-                    <Base />
+                    <Plane />
                     <Walls />
                     <Claw
                         ref={clawRef}
@@ -264,6 +265,12 @@ const ClawMachine = () => {
 };
 
 export default ClawMachine;
+
+
+
+
+
+
 
 const GameContainer = styled.div`
     width: 100%;

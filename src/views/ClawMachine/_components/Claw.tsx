@@ -43,9 +43,9 @@ const Claw = ({
         args: [3, 0.8, 3],
         type: 'Dynamic',
         allowSleep: false,
-        onCollide: (e) => {
-            console.log('Claw collided', e);
-        }
+        // onCollide: (e) => {
+        //     console.log('Claw collided', e);
+        // }
     }));
 
     const baseY = 10;
@@ -101,7 +101,6 @@ const Claw = ({
             move.normalize();
             const baseSpeed = 7;
             // if (!move.equals(new Vector3(0, 0, 0))) {
-            console.log('baseRef.current.position.y', baseRef.current.position.y);
             if(isGraspRef.current === 1) {
                 baseRef.current.position.y += move.y * baseSpeed * delta; // 更新 x 轴位置
                 if (baseRef.current.position.y < -5) {

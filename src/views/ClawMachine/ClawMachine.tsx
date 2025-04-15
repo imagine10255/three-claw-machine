@@ -178,8 +178,13 @@ const ClawMachine = () => {
     return (
         <GameContainer>
             <Canvas
-                camera={{fov: 50, position: [7, 7, 10]}}
+                camera={{
+                    fov: 50,
+                    position: [-1, 12, 34]
+
+                }}
                 shadows
+
             >
                 <color attach="background" args={['lightblue']} />
                 <ambientLight intensity={0.7} />
@@ -191,7 +196,13 @@ const ClawMachine = () => {
                     shadow-mapSize-width={1024}
                     shadow-mapSize-height={1024}
                 />
-                <OrbitControls makeDefault />
+                <OrbitControls
+                    makeDefault
+                    // onChange={(e) => {
+                    //     const cam = e?.target.object;
+                    //     console.log('Camera moved to:', cam?.position.toArray());
+                    // }}
+                />
 
 
 

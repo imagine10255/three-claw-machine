@@ -1,16 +1,17 @@
-import { Physics } from '@react-three/cannon';
-import { OrbitControls } from '@react-three/drei';
-import { Canvas } from '@react-three/fiber';
-import { useEffect, useRef, useState } from 'react';
+import {Physics} from '@react-three/cannon';
+import {OrbitControls} from '@react-three/drei';
+import {Canvas} from '@react-three/fiber';
+import {useEffect, useRef, useState} from 'react';
 import styled from 'styled-components';
-import { IApi, TTargetIndex } from './types';
-import Doll from "./_components/Doll.tsx";
-import Claw, {IClawRefProps} from "./_components/Claw.tsx";
-import Walls from "./_components/Wall.tsx";
-import Base from "./_components/Base.tsx";
-import GameInfo from "./_components/GameInfo.tsx";
-import ControlPanel from "./_components/ControlPanel.tsx";
-import VirtualJoystick from './_components/VirtualJoystick.tsx';
+
+import Base from './_components/Base';
+import Claw, {IClawRefProps} from './_components/Claw';
+import ControlPanel from './_components/ControlPanel';
+import Doll from './_components/Doll';
+import GameInfo from './_components/GameInfo';
+import VirtualJoystick from './_components/VirtualJoystick';
+import Walls from './_components/Wall';
+import {IApi, TTargetIndex} from './types';
 
 interface Props {
     data: IApi[]
@@ -19,10 +20,10 @@ interface Props {
 }
 
 // 主遊戲組件
-const ClawMachine: React.FC<Props> = ({ data }) => {
-    const [isGrabbing, setIsGrabbing] = useState<boolean>(false)
-    const [caughtDolls, setCaughtDolls] = useState<number>(0)
-    const baseSpeed = 0.2
+const ClawMachine: React.FC<Props> = ({data}) => {
+    const [isGrabbing, setIsGrabbing] = useState<boolean>(false);
+    const [caughtDolls, setCaughtDolls] = useState<number>(0);
+    const baseSpeed = 0.2;
     // const clawRef = useRef<Group>(null);
     const clawRef = useRef<IClawRefProps>(null);
     const keysPressed = useRef<Set<string>>(new Set());
@@ -31,7 +32,7 @@ const ClawMachine: React.FC<Props> = ({ data }) => {
     const lerpFactor = 0.1;
     const animationFrameRef = useRef<number | null>(null);
 
-    const dollColors = ['red', 'blue', 'green', 'yellow', 'purple', 'orange']
+    const dollColors = ['red', 'blue', 'green', 'yellow', 'purple', 'orange'];
     const dollPositions: [number, number, number][] = [
         [5, 2, 5],
         [-5, 2, 5],
@@ -41,7 +42,7 @@ const ClawMachine: React.FC<Props> = ({ data }) => {
         [0, 2, -7],
         [7, 2, 0],
         [-7, 2, 0],
-    ]
+    ];
 
     // useEffect(() => {
     //     const handleKeyDown = (e: KeyboardEvent) => {
@@ -153,11 +154,11 @@ const ClawMachine: React.FC<Props> = ({ data }) => {
         <div className="keyboard-controls">
             <p>键盘控制: 方向键/WASD移动, 空格键抓取</p>
         </div>
-    )
+    );
 
     return (
         <GameContainer>
-            <Canvas shadows camera={{ position: [20, 20, 20], fov: 50 }}>
+            <Canvas shadows camera={{position: [20, 20, 20], fov: 50}}>
                 <color attach="background" args={['#87CEEB']} />
                 <ambientLight intensity={0.7} />
                 <pointLight position={[10, 15, 10]} intensity={1.2} castShadow />
@@ -234,16 +235,16 @@ const ClawMachine: React.FC<Props> = ({ data }) => {
                 />
             </JoystickContainer>
         </GameContainer>
-    )
-}
+    );
+};
 
-export default ClawMachine
+export default ClawMachine;
 
 const GameContainer = styled.div`
     width: 100%;
     height: 100vh;
     position: relative;
-`
+`;
 
 const UIContainer = styled.div`
     position: absolute;
@@ -343,7 +344,7 @@ const UIContainer = styled.div`
             margin: 5px 0;
         }
     }
-`
+`;
 
 const JoystickContainer = styled.div`
     position: fixed;

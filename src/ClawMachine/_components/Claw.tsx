@@ -1,10 +1,9 @@
 // 爪子组件
-import {useRef, useState, useImperativeHandle, forwardRef, ForwardedRef, useEffect} from "react";
-import * as THREE from "three";
-import {useBox} from "@react-three/cannon";
-import {MeshProps, useFrame} from "@react-three/fiber";
-import {setForwardedRef} from "../../utils/copyRef.ts";
-import {Vector3} from "three";
+import {useBox} from '@react-three/cannon';
+import {MeshProps, useFrame} from '@react-three/fiber';
+import {ForwardedRef, forwardRef, useEffect,useImperativeHandle, useRef, useState} from 'react';
+import * as THREE from 'three';
+import {Vector3} from 'three';
 
 // 型別定義
 interface ClawProps {
@@ -13,21 +12,21 @@ interface ClawProps {
 }
 
 interface ArmProps {
-    position: [number, number, number];
-    args: [number, number, number];
-    rotation: [number, number, number];
+    position: [number, number, number]
+    args: [number, number, number]
+    rotation: [number, number, number]
 }
 
 export interface IClawRefProps{
-    startMoving: (direction: string) => void;
-    stopMoving: () => void;
+    startMoving: (direction: string) => void
+    stopMoving: () => void
 }
 
 
 const Claw = ({
-     position,
-     isGrabbing,
- }: ClawProps, ref: ForwardedRef<IClawRefProps>) => {
+    position,
+    isGrabbing,
+}: ClawProps, ref: ForwardedRef<IClawRefProps>) => {
     const baseRef = useRef<THREE.Group>(null);
     const cableRef = useRef<THREE.Mesh>(null);
     const [targetY, setTargetY] = useState(position[1]);
@@ -45,7 +44,7 @@ const Claw = ({
         type: 'Dynamic',
         allowSleep: false,
         onCollide: (e) => {
-            console.log('Claw collided', e)
+            console.log('Claw collided', e);
         }
     }));
 
@@ -53,8 +52,8 @@ const Claw = ({
     const base2Y = 8;
 
     // 爪子线缆 - 调整高度
-    const cableHeight = 25 // 固定高度，确保线缆总是从机器顶部垂下
-    const cableThickness = 0.2
+    const cableHeight = 25; // 固定高度，确保线缆总是从机器顶部垂下
+    const cableThickness = 0.2;
 
     // 爪子手臂 - 更加复杂的结构
     const armProps: ArmProps[] = isGrabbing ? [
@@ -127,13 +126,16 @@ const Claw = ({
     useEffect(() => {
 
         const handleKeyDown = (e: KeyboardEvent) => {
-            e.preventDefault();
 
             const direction = getDirectionFromKey(e.code);
             if(['up','down','left','right'].includes(direction)){
                 startMoving(direction);
+                e.preventDefault();
+
             }else if(direction === 'grasp'){
                 isGraspRef.current = 1;
+                e.preventDefault();
+
             }
         };
 
@@ -189,32 +191,23 @@ const Claw = ({
 
         }
 
-    }
+    };
 
 
     const getDirectionFromKey = (key: string): string => {
         switch (key) {
-            case 'ArrowUp':
-            case 'w':
-            case 'W':
-                return 'up';
-            case 'ArrowDown':
-            case 's':
-            case 'S':
-                return 'down';
-            case 'ArrowLeft':
-            case 'a':
-            case 'A':
-                return 'left';
-            case 'ArrowRight':
-            case 'd':
-            case 'D':
-                return 'right';
-
-            case 'Space':
-                return 'grasp';
-            default:
-                return '';
+        case 'ArrowUp':
+            return 'up';
+        case 'ArrowDown':
+            return 'down';
+        case 'ArrowLeft':
+            return 'left';
+        case 'ArrowRight':
+            return 'right';
+        case 'Space':
+            return 'grasp';
+        default:
+            return '';
         }
     };
 
@@ -261,7 +254,7 @@ const Claw = ({
                 ))}
             </group>
         </>
-    )
+    );
 };
 
 export default forwardRef(Claw);

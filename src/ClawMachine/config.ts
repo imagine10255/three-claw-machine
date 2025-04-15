@@ -1,4 +1,4 @@
-import {IConfig} from './types.ts';
+import {IConfig} from './types';
 
 const radius = 2;
 const sin = Math.sin( Math.PI / 4 ) * radius;

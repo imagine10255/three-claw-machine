@@ -1,12 +1,82 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>輪盤</title>
-  </head>
-  <body>
-    <div id="root"></div>
+<head>
+    <title>益恆充電站巡檢系統</title>
+    <meta name="description" content="益恆充電站巡檢系統有限公司為醫療研究顧問公司，梁智凱醫師擔任執行長，從學童臨床近視管理學為..">
+
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" />
+
+    <link rel="shortcut icon" href="/static/favicon.svg" />
+    <link rel="stylesheet" type="text/css" href="/static/styles/reset.css" />
+<!--    <link rel="stylesheet" type="text/css" href="/static/plugins/pace/flash.css"/>-->
+
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@100..900&display=swap" rel="stylesheet">
+
+    <style>
+
+        .loading{position: fixed;top: 0;bottom: 0;left: 0;right: 0;display: flex;align-items: center;justify-content: center;}
+        .loading svg{opacity: .4;width: 30px;height: 30px;animation: rotateAnimation .5s linear infinite;}
+        @keyframes rotateAnimation { from {transform: rotate(0deg);} to {transform: rotate(360deg);}}
+
+    </style>
+
+    <script>
+        paceOptions = {
+            restartOnPushState: false
+        }
+        window.publicUrl = '%PUBLIC_URL%';
+    </script>
+
+    <script>
+        window.siteCode = '%VITE_SITE_CODE%';
+        window.publicUrl = '%PUBLIC_URL%';
+    </script>
+
+    <script src="/static/scripts/init.js"></script>
     <script type="module" src="/src/main.tsx"></script>
-  </body>
+
+</head>
+<body>
+<noscript>You need to enable JavaScript to run this app.</noscript>
+
+
+<div id="root">
+    <div class="loading">
+        <svg width="24" height="24" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+            <style>.spinner_8XMC{animation:spinner_0zVw 2s infinite}.spinner_WWWR{animation:spinner_Aojx 2s
+            infinite}.spinner_LvYV{transform-origin:center;animation:spinner_xygp .75s linear infinite}@keyframes
+                                                                                                       spinner_0zVw{0%{animation-timing-function:cubic-bezier(0.36,.62,.43,.99);cx:5px}50%{animation-timing-function:cubic-bezier(0.79,0,.58,.57);cx:8px}}@keyframes
+                                                                                                                                                                                                                                                          spinner_Aojx{0%{animation-timing-function:cubic-bezier(0.36,.62,.43,.99);cx:19px}50%{animation-timing-function:cubic-bezier(0.79,0,.58,.57);cx:16px}}@keyframes
+                                                                                                                                                                                                                                                                                                                                                                                                               spinner_xygp{100%{transform:rotate(360deg)}}
+            </style>
+            <defs>
+                <filter id="spinner-gF01">
+                    <feGaussianBlur in="SourceGraphic" stdDeviation="1" result="y"/>
+                    <feColorMatrix in="y" mode="matrix" values="1 0 0 0 0 0 1 0 0 0 0 0 1 0 0 0 0 0 18 -7" result="z"/>
+                    <feBlend in="SourceGraphic" in2="z"/>
+                </filter>
+            </defs>
+            <g class="spinner_LvYV" filter="url(#spinner-gF01)">
+                <circle class="spinner_8XMC" cx="5" cy="12" r="4" fill="#5474d7"/>
+                <circle class="spinner_WWWR" cx="19" cy="12" r="4" fill="#5474d7"/>
+            </g>
+        </svg>
+
+    </div>
+</div>
+<!--
+  This HTML file is a template.
+  If you open it directly in the browser, you will see an empty page.
+
+  You can add webfonts, meta tags, or analytics to this file.
+  The build step will place the bundled scripts into the <body> tag.
+
+  To begin the development, run `npm start` or `yarn start`.
+  To create a production bundle, use `npm run build` or `yarn build`.
+-->
+</body>
 </html>

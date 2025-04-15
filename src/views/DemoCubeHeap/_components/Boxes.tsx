@@ -6,8 +6,12 @@ import type {InstancedMesh} from 'three';
 import {InstancedGeometryProps} from '../types';
 
 
-
-
+/**
+ * Boxes
+ * @param colors
+ * @param number
+ * @param size
+ */
 const Boxes = ({
     colors, number, size
 }: InstancedGeometryProps) => {

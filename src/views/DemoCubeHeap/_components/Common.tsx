@@ -1,9 +1,15 @@
-import {PlaneProps, usePlane, useSphere} from "@react-three/cannon";
-import {useRef} from "react";
-import type {InstancedMesh, Mesh} from "three";
-import {useFrame} from "@react-three/fiber";
-import {InstancedGeometryProps} from "@/views/DemoCubeHeap/types";
+import {PlaneProps, usePlane, useSphere} from '@react-three/cannon';
+import {useFrame} from '@react-three/fiber';
+import {useRef} from 'react';
+import type {InstancedMesh, Mesh} from 'three';
 
+import {InstancedGeometryProps} from '@/views/DemoCubeHeap/types';
+
+
+/**
+ * Plane
+ * @param props
+ */
 export function Plane(props: PlaneProps) {
     const [ref] = usePlane(() => ({...props}), useRef<Mesh>(null));
     return (
@@ -14,6 +20,16 @@ export function Plane(props: PlaneProps) {
     );
 }
 
+
+
+
+
+/**
+ * Spheres
+ * @param colors
+ * @param number
+ * @param size
+ */
 export const Spheres = ({colors, number, size}: InstancedGeometryProps) => {
     const [ref, {at}] = useSphere(
         () => ({

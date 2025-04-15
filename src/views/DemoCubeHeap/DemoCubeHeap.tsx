@@ -17,6 +17,9 @@ const instancedGeometry = {
 };
 
 
+/**
+ * DemoCubeHeap
+ */
 const DemoCubeHeap = () => {
     const [geometry, setGeometry] = useState<'box' | 'sphere'>('box');
     const [number] = useState(200);

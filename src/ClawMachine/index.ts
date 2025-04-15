@@ -1,3 +1,2 @@
-import ClawMachine from './ClawMachine';
-
-export default ClawMachine;
+export {default} from './ClawMachine';
+export * from './types';

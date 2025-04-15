@@ -1,5 +1,4 @@
-import ClawMachine from './SpinWheel';
-import {IApi, TTargetIndex} from './SpinWheel/types.ts';
+import ClawMachine, {IApi, TTargetIndex} from './ClawMachine';
 
 
 const input: IApi[] = [

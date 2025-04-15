@@ -3,7 +3,7 @@ import {useRef, useState, useImperativeHandle, forwardRef, ForwardedRef, useEffe
 import * as THREE from "three";
 import {useBox} from "@react-three/cannon";
 import {MeshProps, useFrame} from "@react-three/fiber";
-import {setForwardedRef} from "./copyRef.ts";
+import {setForwardedRef} from "../../utils/copyRef.ts";
 import {Vector3} from "three";
 
 // 型別定義

@@ -4,14 +4,13 @@ import { Canvas } from '@react-three/fiber';
 import { useEffect, useRef, useState } from 'react';
 import styled from 'styled-components';
 import { IApi, TTargetIndex } from './types';
-import Doll from "./Doll.tsx";
-import Claw, {IClawRefProps} from "./Claw.tsx";
-import Walls from "./Wall.tsx";
-import Base from "./Base.tsx";
-import GameInfo from "./GameInfo.tsx";
-import ControlPanel from "./ControlPanel.tsx";
-import VirtualJoystick from './VirtualJoystick.tsx';
-import {Group, Vector3} from "three";
+import Doll from "./_components/Doll.tsx";
+import Claw, {IClawRefProps} from "./_components/Claw.tsx";
+import Walls from "./_components/Wall.tsx";
+import Base from "./_components/Base.tsx";
+import GameInfo from "./_components/GameInfo.tsx";
+import ControlPanel from "./_components/ControlPanel.tsx";
+import VirtualJoystick from './_components/VirtualJoystick.tsx';
 
 interface Props {
     data: IApi[]

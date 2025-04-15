@@ -1,9 +1,18 @@
 import { useEffect, useRef } from 'react';
 import nipplejs, { JoystickManager, JoystickManagerOptions, EventData, JoystickOutputData } from 'nipplejs';
 import styled from 'styled-components';
+import {Quaternion, Vector3} from "three";
+import {useFrame} from "@react-three/fiber";
+
+interface IPosition {
+    x: number
+    y: number
+    z: number
+}
 
 interface Props {
-    onMove: (direction: string, force: number) => void;
+    // onMove: (position: IPosition) => void;
+    onMove: (direction: string) => void;
     onMoveEnd?: () => void;
 }
 
@@ -13,10 +22,17 @@ const VirtualJoystick = ({
 }: Props) => {
     const joystickRef = useRef<HTMLDivElement>(null);
     const managerRef = useRef<JoystickManager | null>(null);
-    const moveIntervalRef = useRef<number | null>(null);
+    const moveIntervalRef = useRef<JoystickOutputData>();
 
     let canmove = false;
     const lastPositionRef = useRef({x: 0, y: 0});
+
+
+    // useFrame((state, delta) => {
+    //     move(delta);
+    //
+    // });
+
 
     useEffect(() => {
         if (!joystickRef.current) return;
@@ -38,6 +54,7 @@ const VirtualJoystick = ({
             canmove = true;
             // hostWalk();   //人物行走动画
             // controls.enabled = false;
+            console.log('xxx');
             lastPositionRef.current = {
                 x: data.position.x,
                 y: data.position.y,
@@ -45,18 +62,29 @@ const VirtualJoystick = ({
         });
 
         managerRef.current.on('move', (_: EventData, data: JoystickOutputData) => {
+            const forward = new Vector3(0, 0, 0);
+            console.log('222');
 
-            if (data.direction) {
+            const qqq = new Quaternion();
+
+            // forward.copy(playerforward);
+            // forward.applyQuaternion(qqq);
+            // forward.normalize();
+            // forward.multiplyScalar(movedistance * 0.01 * delta);
+            console.log('data.direction?.x', data.direction);
+            onMove(data.direction?.angle);
+            // moveIntervalRef.current = data;
+            /*if (data.direction) {
                 canmove = true;
                 // peopleObj.movedistance = data.distance;
-                // if (data.direction) {
-                //     playerforward.set(
-                //         lastpx - data.position.x,
-                //         0,
-                //         lastpy - data.position.y
-                //     );
-                // }
-            }
+                if (data.direction) {
+                    onMove({
+                        x: lastPositionRef.current.x + data.position.x,
+                        y: 0,
+                        z: lastPositionRef.current.y + data.position.y
+                    })
+                }
+            }*/
 
 
 
@@ -83,16 +111,49 @@ const VirtualJoystick = ({
 
         // 監聽搖桿結束移動事件
         managerRef.current.on('end', () => {
-            // onMoveEnd?.();
+            onMoveEnd?.();
         });
 
         return () => {
-            if (moveIntervalRef.current) {
-                clearInterval(moveIntervalRef.current);
-            }
+            // if (moveIntervalRef.current) {
+            //     clearInterval(moveIntervalRef.current);
+            // }
             managerRef.current?.destroy();
         };
     }, [onMove, onMoveEnd]);
+
+
+    const move = (delta: number) => {
+        // move.x = (keysPressed.current.has('ArrowRight') ? 1 : 0) - (keysPressed.current.has('ArrowLeft') ? 1 : 0);
+        // move.z = (keysPressed.current.has('ArrowDown') ? 1 : 0) - (keysPressed.current.has('ArrowUp') ? 1 : 0);
+        // move.normalize();
+
+        // if (!move.equals(new Vector3(0, 0, 0))) {
+        //     currentForce.current += move.length() * baseSpeed;
+        //     currentForce.current = Math.min(currentForce.current, baseSpeed);
+        // } else {
+        //     currentForce.current = Math.max(currentForce.current - lerpFactor, 0);
+        // }
+        const move = new Vector3();
+        if(moveIntervalRef.current){
+            if(moveIntervalRef.current.direction){
+                const position = moveIntervalRef.current.position;
+                onMove(moveIntervalRef.current.direction.x || moveIntervalRef.current.direction.y);
+                // onMove({
+                //     x: lastPositionRef.current.x + position.x,
+                //     y: 0,
+                //     z: lastPositionRef.current.y + position.y
+                // })
+            }
+        }
+
+
+    }
+
+
+
+
+
 
     return <JoystickContainer ref={joystickRef} />;
 };

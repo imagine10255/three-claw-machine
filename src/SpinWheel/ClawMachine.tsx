@@ -5,12 +5,13 @@ import { useEffect, useRef, useState } from 'react';
 import styled from 'styled-components';
 import { IApi, TTargetIndex } from './types';
 import Doll from "./Doll.tsx";
-import Claw from "./Claw.tsx";
+import Claw, {IClawRefProps} from "./Claw.tsx";
 import Walls from "./Wall.tsx";
 import Base from "./Base.tsx";
 import GameInfo from "./GameInfo.tsx";
 import ControlPanel from "./ControlPanel.tsx";
 import VirtualJoystick from './VirtualJoystick.tsx';
+import {Group, Vector3} from "three";
 
 interface Props {
     data: IApi[]
@@ -20,17 +21,18 @@ interface Props {
 
 // 主遊戲組件
 const ClawMachine: React.FC<Props> = ({ data }) => {
-    const [clawPosition, setClawPosition] = useState<[number, number, number]>([0, 0, 0])
     const [isGrabbing, setIsGrabbing] = useState<boolean>(false)
     const [caughtDolls, setCaughtDolls] = useState<number>(0)
-    const moveSpeed = 0.2  // 調整移動速度
-    const clawRef = useRef<any>(null);
+    const baseSpeed = 0.2
+    // const clawRef = useRef<Group>(null);
+    const clawRef = useRef<IClawRefProps>(null);
     const keysPressed = useRef<Set<string>>(new Set());
-    const moveInterval = useRef<number | null>(null);
     const currentDirection = useRef<string | null>(null);
+    const currentForce = useRef<number>(1);
+    const lerpFactor = 0.1;
+    const animationFrameRef = useRef<number | null>(null);
 
     const dollColors = ['red', 'blue', 'green', 'yellow', 'purple', 'orange']
-    // 调整娃娃位置，让娃娃站在平台上
     const dollPositions: [number, number, number][] = [
         [5, 2, 5],
         [-5, 2, 5],
@@ -42,116 +44,110 @@ const ClawMachine: React.FC<Props> = ({ data }) => {
         [-7, 2, 0],
     ]
 
-    useEffect(() => {
-        const handleKeyDown = (e: KeyboardEvent) => {
-            e.preventDefault();
-            if (!keysPressed.current.has(e.key)) {
-                keysPressed.current.add(e.key);
-                startMoving(getDirectionFromKey(e.key));
-            }
-        };
+    // useEffect(() => {
+    //     const handleKeyDown = (e: KeyboardEvent) => {
+    //         e.preventDefault();
+    //         if (!keysPressed.current.has(e.key)) {
+    //             keysPressed.current.add(e.key);
+    //             startMoving(getDirectionFromKey(e.key), 1);
+    //         }
+    //     };
+    //
+    //     const handleKeyUp = (e: KeyboardEvent) => {
+    //         keysPressed.current.delete(e.key);
+    //         if (keysPressed.current.size === 0) {
+    //             stopMoving();
+    //         } else {
+    //             const lastKey = Array.from(keysPressed.current).pop();
+    //             if (lastKey) {
+    //                 startMoving(getDirectionFromKey(lastKey), 1);
+    //             }
+    //         }
+    //     };
+    //
+    //     const getDirectionFromKey = (key: string): string => {
+    //         switch (key) {
+    //             case 'ArrowUp':
+    //             case 'w':
+    //             case 'W':
+    //                 return 'forward';
+    //             case 'ArrowDown':
+    //             case 's':
+    //             case 'S':
+    //                 return 'backward';
+    //             case 'ArrowLeft':
+    //             case 'a':
+    //             case 'A':
+    //                 return 'left';
+    //             case 'ArrowRight':
+    //             case 'd':
+    //             case 'D':
+    //                 return 'right';
+    //             default:
+    //                 return '';
+    //         }
+    //     };
+    //
+    //     const animate = () => {
+    //         if (currentDirection.current && clawRef.current) {
+    //             const speed = baseSpeed * currentForce.current;
+    //             const position = clawRef.current.position;
+    //             let newX = position.x;
+    //             let newZ = position.z;
+    //
+    //             switch (currentDirection.current) {
+    //                 case 'forward':
+    //                     newZ = Math.max(-9, Math.min(9, position.z - speed));
+    //                     break;
+    //                 case 'backward':
+    //                     newZ = Math.max(-9, Math.min(9, position.z + speed));
+    //                     break;
+    //                 case 'left':
+    //                     newX = Math.max(-9, Math.min(9, position.x - speed));
+    //                     break;
+    //                 case 'right':
+    //                     newX = Math.max(-9, Math.min(9, position.x + speed));
+    //                     break;
+    //             }
+    //
+    //             // 使用 lerp 進行平滑移動
+    //             position.x += (newX - position.x) * lerpFactor;
+    //             position.z += (newZ - position.z) * lerpFactor;
+    //         }
+    //         animationFrameRef.current = requestAnimationFrame(animate);
+    //     };
+    //
+    //     animationFrameRef.current = requestAnimationFrame(animate);
+    //
+    //     window.addEventListener('keydown', handleKeyDown);
+    //     window.addEventListener('keyup', handleKeyUp);
+    //
+    //     return () => {
+    //         window.removeEventListener('keydown', handleKeyDown);
+    //         window.removeEventListener('keyup', handleKeyUp);
+    //         if (animationFrameRef.current) {
+    //             cancelAnimationFrame(animationFrameRef.current);
+    //         }
+    //         stopMoving();
+    //     };
+    // }, []);
 
-        const handleKeyUp = (e: KeyboardEvent) => {
-            keysPressed.current.delete(e.key);
-            if (keysPressed.current.size === 0) {
-                stopMoving();
-            } else {
-                // 如果還有其他按鍵被按著，繼續移動最後一個方向
-                const lastKey = Array.from(keysPressed.current).pop();
-                if (lastKey) {
-                    startMoving(getDirectionFromKey(lastKey));
-                }
-            }
-        };
-
-        const getDirectionFromKey = (key: string): string => {
-            switch (key) {
-                case 'ArrowUp':
-                case 'w':
-                case 'W':
-                    return 'forward';
-                case 'ArrowDown':
-                case 's':
-                case 'S':
-                    return 'backward';
-                case 'ArrowLeft':
-                case 'a':
-                case 'A':
-                    return 'left';
-                case 'ArrowRight':
-                case 'd':
-                case 'D':
-                    return 'right';
-                default:
-                    return '';
-            }
-        };
-
-        window.addEventListener('keydown', handleKeyDown);
-        window.addEventListener('keyup', handleKeyUp);
-        
-        return () => {
-            window.removeEventListener('keydown', handleKeyDown);
-            window.addEventListener('keyup', handleKeyUp);
-            stopMoving();
-        };
-    }, []);
-
-    const startMoving = (direction: string) => {
+    const startMoving = (direction: string, force: number = 1) => {
         if (!direction) return;
         currentDirection.current = direction;
-        
-        if (moveInterval.current === null) {
-            moveInterval.current = window.setInterval(() => {
-                if (currentDirection.current) {
-                    handleMove(currentDirection.current);
-                }
-            }, 16); // 約60fps
-        }
+        currentForce.current = force;
     };
 
     const stopMoving = () => {
-        if (moveInterval.current !== null) {
-            window.clearInterval(moveInterval.current);
-            moveInterval.current = null;
-        }
         currentDirection.current = null;
-    };
-
-    const handleMove = (direction: string) => {
-        setClawPosition(prevPosition => {
-            let [x, y, z] = prevPosition;
-            switch (direction) {
-                case 'forward':
-                    z = Math.max(-9, Math.min(9, z - moveSpeed));
-                    break;
-                case 'backward':
-                    z = Math.max(-9, Math.min(9, z + moveSpeed));
-                    break;
-                case 'left':
-                    x = Math.max(-9, Math.min(9, x - moveSpeed));
-                    break;
-                case 'right':
-                    x = Math.max(-9, Math.min(9, x + moveSpeed));
-                    break;
-            }
-            return [x, y, z];
-        });
+        currentForce.current = 1;
     };
 
     const handleGrab = () => {
         if (clawRef.current) {
-            clawRef.current.grab();
+            // clawRef.current.grab();
         }
     };
-
-    const handleClawPositionChange = (newPosition: [number, number, number]) => {
-        // 更新爪子位置，但限制在娃娃机范围内
-        const x = Math.max(-9, Math.min(9, newPosition[0]))
-        const y = Math.max(3, Math.min(30, newPosition[1])) // 调整高度上限到30
-        const z = Math.max(-9, Math.min(9, newPosition[2]))
-        setClawPosition([x, y, z])
-    }
 
     // 增加键盘控制说明
     const renderKeyboardControls = () => (
@@ -176,14 +172,12 @@ const ClawMachine: React.FC<Props> = ({ data }) => {
                 <OrbitControls makeDefault />
 
                 <Physics>
-                    {/*<Floor />*/}
                     <Base />
                     <Walls />
                     <Claw
                         ref={clawRef}
-                        position={clawPosition}
+                        position={[0, 0, 0]}
                         isGrabbing={isGrabbing}
-                        onPositionChange={handleClawPositionChange}
                     />
 
                     {dollPositions.map((position, index) => (
@@ -201,7 +195,7 @@ const ClawMachine: React.FC<Props> = ({ data }) => {
 
             <UIContainer>
                 <ControlPanel
-                    onMove={handleMove}
+                    onMove={startMoving}
                     onGrab={handleGrab}
                     isGrabbing={isGrabbing}
                 />
@@ -213,12 +207,30 @@ const ClawMachine: React.FC<Props> = ({ data }) => {
             </UIContainer>
 
             <JoystickContainer>
-                <VirtualJoystick 
+                <VirtualJoystick
                     onMove={(direction) => {
-                        startMoving(direction);
+                        // startMoving(direction);
+                        if(clawRef.current){
+
+                            clawRef.current.startMoving(direction);
+                            // const speed = .5; // 定义移动速度
+                            // const directionVector = new Vector3(direction.x, direction.y, direction.z).normalize().multiplyScalar(speed); // 归一化方向向量并乘以速度
+                            // clawRef.current.position.add(directionVector); // 更新爪子的位置信息
+
+                            // clawRef.current.copy(new Vector3(direction.x, direction.y, direction.z));
+                        }
                     }}
                     onMoveEnd={() => {
-                        stopMoving();
+                        if(clawRef.current){
+
+                            clawRef.current.stopMoving();
+                            // const speed = .5; // 定义移动速度
+                            // const directionVector = new Vector3(direction.x, direction.y, direction.z).normalize().multiplyScalar(speed); // 归一化方向向量并乘以速度
+                            // clawRef.current.position.add(directionVector); // 更新爪子的位置信息
+
+                            // clawRef.current.copy(new Vector3(direction.x, direction.y, direction.z));
+                        }
+                        // stopMoving();
                     }}
                 />
             </JoystickContainer>

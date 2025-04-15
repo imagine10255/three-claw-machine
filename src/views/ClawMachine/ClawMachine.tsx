@@ -218,7 +218,10 @@ const ClawMachine = () => {
                     <Boxes {...{colors, number, size}} />
                 </Physics>
 
-                <gridHelper args={[30, 30]} position={[0, -1.9, 0]} />
+                <gridHelper
+                    args={[30, 30]}
+                    position={[0, -0.1, 0]}
+                />
             </Canvas>
 
             <UIContainer>

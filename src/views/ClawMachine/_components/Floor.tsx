@@ -3,7 +3,7 @@
 import {usePlane} from '@react-three/cannon';
 import {Mesh} from 'three';
 
-function Floor() {
+const Floor = () => {
     const [ref] = usePlane<Mesh>(() => ({
         rotation: [-Math.PI / 2, 0, 0],
         position: [0, -1, 0],
@@ -17,7 +17,7 @@ function Floor() {
         </mesh>
     );
 
-}
+};
 
 
 export default Floor;

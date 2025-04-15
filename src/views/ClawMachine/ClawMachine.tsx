@@ -24,8 +24,8 @@ interface Props {
 
 // 主遊戲組件
 const ClawMachine = () => {
-    const [number] = useState(10);
-    const [size] = useState(1);
+    const [number] = useState(50);
+    const [size] = useState(1.5);
 
     const [isGrabbing, setIsGrabbing] = useState<boolean>(false);
     const [caughtDolls, setCaughtDolls] = useState<number>(0);
@@ -216,15 +216,6 @@ const ClawMachine = () => {
                     />
 
                     <Boxes {...{colors, number, size}} />
-
-                    {/*{dollPositions.map((position, index) => (*/}
-                    {/*    <Doll*/}
-                    {/*        key={index}*/}
-                    {/*        position={position}*/}
-                    {/*        color={dollColors[index % dollColors.length]}*/}
-                    {/*        size={3}*/}
-                    {/*    />*/}
-                    {/*))}*/}
                 </Physics>
 
                 <gridHelper args={[30, 30]} position={[0, -1.9, 0]} />

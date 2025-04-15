@@ -26,7 +26,11 @@ const Boxes = ({
         () => ({
             args,
             mass: 1,
-            position: [Math.random() - 0.5, Math.random() * 2, Math.random() - 0.5],
+            position: [
+                (Math.random() - 0.5) * 10,
+                Math.random() * 5 + 2,
+                (Math.random() - 0.5) * 10
+            ],
         }),
         useRef<InstancedMesh>(null),
     );
@@ -38,7 +42,11 @@ const Boxes = ({
     // });
 
     useEffect(() => {
-        at(Math.floor(Math.random() * number)).position.set(0, Math.random() * 2, 0);
+        at(Math.floor(Math.random() * number)).position.set(
+            (Math.random() - 0.5) * 10,
+            Math.random() * 5 + 2,
+            (Math.random() - 0.5) * 10
+        );
     }, []);
 
 

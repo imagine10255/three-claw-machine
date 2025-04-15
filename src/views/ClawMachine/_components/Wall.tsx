@@ -1,28 +1,64 @@
-import {useBox} from '@react-three/cannon';
+import {Triplet, useBox} from '@react-three/cannon';
 import {BufferGeometry, Mesh, NormalBufferAttributes, Object3D, Object3DEventMap} from 'three';
 
 
+interface IWallProps {
+    position: Triplet
+    args: Triplet
+}
 
-// 娃娃機壁
-function Walls() {
-    const wallProps = [
-        {position: [0, 7, 10] as [number, number, number], args: [20, 12, 0.5] as [number, number, number]}, // 后壁
-        {position: [0, 7, -10] as [number, number, number], args: [20, 12, 0.5] as [number, number, number]}, // 前壁
-        {position: [10, 7, 0] as [number, number, number], args: [0.5, 12, 20] as [number, number, number]}, // 右壁
-        {position: [-10, 7, 0] as [number, number, number], args: [0.5, 12, 20] as [number, number, number]} // 左壁
-    ];
+
+/**
+ * 娃娃機壁
+ */
+const Walls = () => {
+    const wallProps: IWallProps[] = [
+        {
+            // 后壁
+            position: [0, 7, 10],
+            args: [20, 12, 0.5]
+        },
+        {
+            // 前壁
+            position: [0, 7, -10],
+            args: [20, 12, 0.5]
+        },
+        {
+            // 右壁
+            position: [10, 7, 0],
+            args: [0.5, 12, 20]
+        },
+        {
+            // 左壁
+            position: [-10, 7, 0],
+            args: [0.5, 12, 20]
+        }
+    ]
+
+    ;
 
     return (
         <>
-            {wallProps.map((props, i) => (
-                <Wall key={i} position={props.position} args={props.args} />
-            ))}
+            {wallProps.map((props, i) => {
+                return <Wall key={i}
+                    position={props.position}
+                    args={props.args}
+                />;
+            })}
         </>
     );
 }
 
 
-function Wall({position, args}: {position: [number, number, number], args: [number, number, number]}) {
+/**
+ * 牆
+ * @param position
+ * @param args
+ */
+const Wall = ({
+    position,
+    args
+}: IWallProps) => {
     const [ref] = useBox<Mesh>(() => ({
         mass: 0,
         position,
@@ -36,6 +72,6 @@ function Wall({position, args}: {position: [number, number, number], args: [numb
             <meshStandardMaterial color="#87CEEB" transparent opacity={0.2} />
         </mesh>
     );
-}
+};
 
 export default Walls;

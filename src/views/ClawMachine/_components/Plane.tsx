@@ -3,7 +3,7 @@ import {useRef} from 'react';
 import type {Mesh} from 'three';
 
 
-const args: Triplet = [10, .1, 10];
+const args: Triplet = [20, .2, 20];
 
 /**
  * Plane

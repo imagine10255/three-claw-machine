@@ -28,7 +28,6 @@ export interface IClawRefProps{
  * @param position
  * @param isGrabbing
  * @param ref
- * @constructor
  */
 const Claw = ({
     position,
@@ -50,9 +49,9 @@ const Claw = ({
         args: [3, 0.8, 3],
         type: 'Dynamic',
         allowSleep: false,
-        // onCollide: (e) => {
-        //     console.log('Claw collided', e);
-        // }
+        onCollide: (e) => {
+            console.log('Claw collided', e.target);
+        }
     }));
 
     const baseY = 10;

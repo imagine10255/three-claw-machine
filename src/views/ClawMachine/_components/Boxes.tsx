@@ -26,6 +26,7 @@ const Boxes = ({
         () => ({
             args,
             mass: 1,
+
             position: [
                 (Math.random() - 0.5) * 10,
                 Math.random() * 5 + 2,

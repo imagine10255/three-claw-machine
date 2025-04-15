@@ -1,9 +1,10 @@
 
 // 娃娃機底座
 import {useBox} from '@react-three/cannon';
+import {Mesh} from 'three';
 
 function Base() {
-    const [ref] = useBox<any>(() => ({
+    const [ref] = useBox<Mesh>(() => ({
         mass: 0,
         position: [0, 0, 0],
         args: [20, 2, 20],

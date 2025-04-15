@@ -1,4 +1,5 @@
 import {useBox} from '@react-three/cannon';
+import {BufferGeometry, Mesh, NormalBufferAttributes, Object3D, Object3DEventMap} from 'three';
 
 
 
@@ -22,7 +23,7 @@ function Walls() {
 
 
 function Wall({position, args}: {position: [number, number, number], args: [number, number, number]}) {
-    const [ref] = useBox<any>(() => ({
+    const [ref] = useBox<Mesh>(() => ({
         mass: 0,
         position,
         args,

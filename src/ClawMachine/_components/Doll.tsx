@@ -1,6 +1,7 @@
 
 // 娃娃组件
 import {useSphere} from '@react-three/cannon';
+import {Mesh} from 'three';
 
 
 interface DollProps {
@@ -11,7 +12,7 @@ interface DollProps {
 
 
 function Doll({position, color, size = 2}: DollProps) {
-    const [ref] = useSphere<any>(() => ({
+    const [ref] = useSphere<Mesh>(() => ({
         mass: 1,
         position,
         args: [size / 2],

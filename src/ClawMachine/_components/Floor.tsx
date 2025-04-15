@@ -1,9 +1,10 @@
 
 // 地板
 import {usePlane} from '@react-three/cannon';
+import {Mesh} from 'three';
 
 function Floor() {
-    const [ref] = usePlane<any>(() => ({
+    const [ref] = usePlane<Mesh>(() => ({
         rotation: [-Math.PI / 2, 0, 0],
         position: [0, -1, 0],
         type: 'Static'

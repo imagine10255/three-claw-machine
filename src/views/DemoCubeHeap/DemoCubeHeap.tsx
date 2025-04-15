@@ -5,7 +5,8 @@ import {useMemo, useState} from 'react';
 import {Color} from 'three';
 
 import Boxes from './_components/Boxes';
-import {Plane, Spheres} from './_components/Common';
+import {Plane} from './_components/Common';
+import Spheres from './_components/Spheres';
 
 const niceColors = ['#99b898', '#fecea8', '#ff847c', '#e84a5f', '#2a363b'];
 

@@ -1,7 +1,7 @@
 import {Physics} from '@react-three/cannon';
 import {OrbitControls} from '@react-three/drei';
 import {Canvas} from '@react-three/fiber';
-import {useEffect, useRef, useState} from 'react';
+import {useEffect, useMemo, useRef, useState} from 'react';
 import styled from 'styled-components';
 
 import Base from './_components/Base';
@@ -12,6 +12,9 @@ import GameInfo from './_components/GameInfo';
 import VirtualJoystick from './_components/VirtualJoystick';
 import Walls from './_components/Wall';
 import {IApi, TTargetIndex} from './types';
+import Boxes from "@/views/ClawMachine/_components/Boxes";
+import {Color} from "three";
+const niceColors = ['#99b898', '#fecea8', '#ff847c', '#e84a5f', '#2a363b'];
 
 interface Props {
     data: IApi[]
@@ -21,6 +24,9 @@ interface Props {
 
 // 主遊戲組件
 const ClawMachine = () => {
+    const [number] = useState(200);
+    const [size] = useState(0.1);
+
     const [isGrabbing, setIsGrabbing] = useState<boolean>(false);
     const [caughtDolls, setCaughtDolls] = useState<number>(0);
     const baseSpeed = 0.2;
@@ -43,6 +49,19 @@ const ClawMachine = () => {
         [7, 2, 0],
         [-7, 2, 0],
     ];
+
+
+
+    const colors = useMemo(() => {
+        const array = new Float32Array(number * 3);
+        const color = new Color();
+        for (let i = 0; i < number; i++)
+            color
+                .set(niceColors[Math.floor(Math.random() * 5)])
+                .convertSRGBToLinear()
+                .toArray(array, i * 3);
+        return array;
+    }, [number]);
 
     // useEffect(() => {
     //     const handleKeyDown = (e: KeyboardEvent) => {
@@ -159,7 +178,8 @@ const ClawMachine = () => {
     return (
         <GameContainer>
             <Canvas
-                camera={{fov: 50, position: [20, 20, 20]}}
+                camera={{fov: 50, position: [-1, 1, 2.5]}}
+                onCreated={({scene}) => (scene.background = new Color('lightblue'))}
                 shadows
             >
                 <color attach="background" args={['#87CEEB']} />
@@ -183,14 +203,16 @@ const ClawMachine = () => {
                         isGrabbing={isGrabbing}
                     />
 
-                    {dollPositions.map((position, index) => (
-                        <Doll
-                            key={index}
-                            position={position}
-                            color={dollColors[index % dollColors.length]}
-                            size={3}
-                        />
-                    ))}
+                    <Boxes {...{colors, number, size}} />
+
+                    {/*{dollPositions.map((position, index) => (*/}
+                    {/*    <Doll*/}
+                    {/*        key={index}*/}
+                    {/*        position={position}*/}
+                    {/*        color={dollColors[index % dollColors.length]}*/}
+                    {/*        size={3}*/}
+                    {/*    />*/}
+                    {/*))}*/}
                 </Physics>
 
                 <gridHelper args={[30, 30]} position={[0, -1.9, 0]} />

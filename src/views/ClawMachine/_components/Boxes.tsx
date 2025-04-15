@@ -3,7 +3,11 @@ import {useFrame} from '@react-three/fiber';
 import {useEffect, useRef} from 'react';
 import type {InstancedMesh} from 'three';
 
-import {InstancedGeometryProps} from '../types';
+interface InstancedGeometryProps {
+    colors: Float32Array
+    number: number
+    size: number
+}
 
 
 /**

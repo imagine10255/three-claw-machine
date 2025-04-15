@@ -114,19 +114,20 @@ const Claw = ({
 
             move.normalize();
             const baseSpeed = 7;
-            // if (!move.equals(new Vector3(0, 0, 0))) {
             if(isGraspRef.current === 1) {
                 // 下降
-                baseRef.current.position.y += move.y * baseSpeed * delta; // 更新 x 轴位置
+                baseApi.velocity.set(0, move.y * baseSpeed, 0);
                 if (baseRef.current.position.y < -5) {
                     isGraspRef.current = 2;
+                    baseApi.velocity.set(0, 0, 0);
                 }
             }
             else if(isGraspRef.current === 2){
                 // 上升
-                baseRef.current.position.y -= move.y * baseSpeed * delta; // 更新 x 轴位置
+                baseApi.velocity.set(0, -move.y * baseSpeed, 0);
                 if (baseRef.current.position.y >= 0) {
                     isGraspRef.current = 0;
+                    baseApi.velocity.set(0, 0, 0);
                 }
             }
 
@@ -198,8 +199,7 @@ const Claw = ({
             move.normalize();
             const baseSpeed = 20;
             if (!move.equals(new Vector3(0, 0, 0))) {
-                baseRef.current.position.x += move.x * baseSpeed * delta; // 更新 x 轴位置
-                baseRef.current.position.z += move.z * baseSpeed * delta; // 更新 z 轴位置
+                baseApi.velocity.set(move.x * baseSpeed, 0, move.z * baseSpeed);
             } else {
                 // 停止移动时不需要更新位置
             }

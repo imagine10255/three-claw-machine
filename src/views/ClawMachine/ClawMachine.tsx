@@ -158,7 +158,10 @@ const ClawMachine = () => {
 
     return (
         <GameContainer>
-            <Canvas shadows camera={{position: [20, 20, 20], fov: 50}}>
+            <Canvas
+                camera={{fov: 50, position: [20, 20, 20]}}
+                shadows
+            >
                 <color attach="background" args={['#87CEEB']} />
                 <ambientLight intensity={0.7} />
                 <pointLight position={[10, 15, 10]} intensity={1.2} castShadow />

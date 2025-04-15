@@ -1,5 +1,6 @@
+import DemoCubeHeap from '@/views/DemoCubeHeap';
+
 import ClawMachine, {IApi, TTargetIndex} from './ClawMachine';
-import DemoCubeHeap from "@/views/DemoCubeHeap";
 
 
 export default function App() {

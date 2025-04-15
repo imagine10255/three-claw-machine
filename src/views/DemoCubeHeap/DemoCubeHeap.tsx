@@ -1,75 +1,23 @@
-import type {PlaneProps, Triplet} from '@react-three/cannon';
-import {Physics, useBox, usePlane, useSphere} from '@react-three/cannon';
-import {Canvas, useFrame} from '@react-three/fiber';
-import {useMemo, useRef, useState} from 'react';
-import type {InstancedMesh, Mesh} from 'three';
+import {Physics} from '@react-three/cannon';
+import {OrbitControls} from '@react-three/drei';
+import {Canvas} from '@react-three/fiber';
+import {useMemo, useState} from 'react';
 import {Color} from 'three';
+
+import Boxes from './_components/Boxes';
+import {Plane, Spheres} from './_components/Common';
 
 const niceColors = ['#99b898', '#fecea8', '#ff847c', '#e84a5f', '#2a363b'];
 
-function Plane(props: PlaneProps) {
-    const [ref] = usePlane(() => ({...props}), useRef<Mesh>(null));
-    return (
-        <mesh ref={ref} receiveShadow>
-            <planeGeometry args={[10, 10]} />
-            <shadowMaterial color="#171717" />
-        </mesh>
-    );
-}
 
-type InstancedGeometryProps = {
-    colors: Float32Array,
-    number: number,
-    size: number,
-}
-
-const Spheres = ({colors, number, size}: InstancedGeometryProps) => {
-    const [ref, {at}] = useSphere(
-        () => ({
-            args: [size],
-            mass: 1,
-            position: [Math.random() - 0.5, Math.random() * 2, Math.random() - 0.5],
-        }),
-        useRef<InstancedMesh>(null),
-    );
-    useFrame(() => at(Math.floor(Math.random() * number)).position.set(0, Math.random() * 2, 0));
-    return (
-        <instancedMesh receiveShadow castShadow ref={ref} args={[undefined, undefined, number]}>
-            <sphereGeometry args={[size, 48]}>
-                <instancedBufferAttribute attach="attributes-color" args={[colors, 3]} />
-            </sphereGeometry>
-            <meshLambertMaterial vertexColors />
-        </instancedMesh>
-    );
-};
-
-const Boxes = ({colors, number, size}: InstancedGeometryProps) => {
-    const args: Triplet = [size, size, size];
-    const [ref, {at}] = useBox(
-        () => ({
-            args,
-            mass: 1,
-            position: [Math.random() - 0.5, Math.random() * 2, Math.random() - 0.5],
-        }),
-        useRef<InstancedMesh>(null),
-    );
-    useFrame(() => at(Math.floor(Math.random() * number)).position.set(0, Math.random() * 2, 0));
-    return (
-        <instancedMesh receiveShadow castShadow ref={ref} args={[undefined, undefined, number]}>
-            <boxGeometry args={args}>
-                <instancedBufferAttribute attach="attributes-color" args={[colors, 3]} />
-            </boxGeometry>
-            <meshLambertMaterial vertexColors />
-        </instancedMesh>
-    );
-};
 
 const instancedGeometry = {
     box: Boxes,
     sphere: Spheres,
 };
 
-export default () => {
+
+const DemoCubeHeap = () => {
     const [geometry, setGeometry] = useState<'box' | 'sphere'>('box');
     const [number] = useState(200);
     const [size] = useState(0.1);
@@ -94,6 +42,8 @@ export default () => {
             onPointerMissed={() => setGeometry((geometry) => (geometry === 'box' ? 'sphere' : 'box'))}
             shadows
         >
+            <OrbitControls makeDefault />
+
             <hemisphereLight intensity={0.35 * Math.PI} />
             <spotLight
                 angle={0.3}
@@ -110,3 +60,5 @@ export default () => {
         </Canvas>
     );
 };
+
+export default DemoCubeHeap;

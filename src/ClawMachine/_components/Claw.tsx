@@ -27,13 +27,15 @@ export interface IClawRefProps{
 const Claw = ({
      position,
      isGrabbing,
- }: ClawProps, ref: ForwardedRef<IRefProps>) => {
+ }: ClawProps, ref: ForwardedRef<IClawRefProps>) => {
     const baseRef = useRef<THREE.Group>(null);
     const cableRef = useRef<THREE.Mesh>(null);
     const [targetY, setTargetY] = useState(position[1]);
 
     const keysPressed = useRef<Set<string>>(new Set());
     const currentDirection = useRef<string | null>(null);
+    const isGraspRef = useRef<number>(0);
+
     const inputRef = useRef<HTMLInputElement>(null);
 
     const [baseBody, baseApi] = useBox(() => ({
@@ -90,6 +92,31 @@ const Claw = ({
 
     useFrame((state, delta) => {
         onMove(delta);
+
+
+        const move = new Vector3();
+
+        if (baseRef.current) {
+            move.y = -1;
+
+            move.normalize();
+            const baseSpeed = 7;
+            // if (!move.equals(new Vector3(0, 0, 0))) {
+            console.log('baseRef.current.position.y', baseRef.current.position.y);
+            if(isGraspRef.current === 1) {
+                baseRef.current.position.y += move.y * baseSpeed * delta; // 更新 x 轴位置
+                if (baseRef.current.position.y < -5) {
+                    isGraspRef.current = 2;
+                }
+            }
+            else if(isGraspRef.current === 2){
+                baseRef.current.position.y -= move.y * baseSpeed * delta; // 更新 x 轴位置
+                if (baseRef.current.position.y >= 0) {
+                    isGraspRef.current = 0;
+                }
+            }
+
+        }
     });
 
     useImperativeHandle(ref, () => ({
@@ -101,12 +128,13 @@ const Claw = ({
 
         const handleKeyDown = (e: KeyboardEvent) => {
             e.preventDefault();
-            startMoving(getDirectionFromKey(e.key));
 
-            // if (!keysPressed.current.has(e.key)) {
-            //     keysPressed.current.add(e.key);
-            //
-            // }
+            const direction = getDirectionFromKey(e.code);
+            if(['up','down','left','right'].includes(direction)){
+                startMoving(direction);
+            }else if(direction === 'grasp'){
+                isGraspRef.current = 1;
+            }
         };
 
         const handleKeyUp = (e: KeyboardEvent) => {
@@ -182,6 +210,9 @@ const Claw = ({
             case 'd':
             case 'D':
                 return 'right';
+
+            case 'Space':
+                return 'grasp';
             default:
                 return '';
         }

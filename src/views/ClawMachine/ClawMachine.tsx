@@ -178,7 +178,7 @@ const ClawMachine = () => {
     return (
         <GameContainer>
             <Canvas
-                camera={{fov: 80, position: [0, 7, 10]}}
+                camera={{fov: 50, position: [7, 7, 10]}}
                 shadows
             >
                 <color attach="background" args={['lightblue']} />

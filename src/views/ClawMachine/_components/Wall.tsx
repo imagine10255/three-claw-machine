@@ -15,12 +15,12 @@ const Walls = () => {
     const wallProps: IWallProps[] = [
         {
             // 后壁
-            position: [0, 7, 10],
+            position: [0, 0, 10],
             args: [20, 12, 0.5]
         },
         {
             // 前壁
-            position: [0, 7, -10],
+            position: [0, 0, -10],
             args: [20, 12, 0.5]
         },
         {
@@ -30,7 +30,7 @@ const Walls = () => {
         },
         {
             // 左壁
-            position: [-10, 7, 0],
+            position: [-10, 0, 0],
             args: [0.5, 12, 20]
         }
     ]
@@ -41,13 +41,19 @@ const Walls = () => {
         <>
             {wallProps.map((props, i) => {
                 return <Wall key={i}
-                    position={props.position}
+                    position={
+                        [
+                            props.position[0],
+                            props.args[1] / 2,
+                            props.position[2]
+                        ]
+                    }
                     args={props.args}
                 />;
             })}
         </>
     );
-}
+};
 
 
 /**

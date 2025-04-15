@@ -23,6 +23,13 @@ export interface IClawRefProps{
 }
 
 
+/**
+ * 爪子
+ * @param position
+ * @param isGrabbing
+ * @param ref
+ * @constructor
+ */
 const Claw = ({
     position,
     isGrabbing,

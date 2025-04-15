@@ -1,6 +1,22 @@
+interface IProps {
+    onMove: (direction: string) => void
+    onGrab: () => void
+    isGrabbing: boolean
+}
 
-// 控制面板
-function ControlPanel({onMove, onGrab, isGrabbing}: {onMove: (direction: string) => void, onGrab: () => void, isGrabbing: boolean}) {
+/**
+ * 控制面板
+ * @param onMove
+ * @param onGrab
+ * @param isGrabbing
+ * @constructor
+ */
+const ControlPanel = ({
+    onMove,
+    onGrab,
+    isGrabbing
+}: IProps) => {
+
     return (
         <div className="controls">
             <div className="d-pad">
@@ -14,6 +30,6 @@ function ControlPanel({onMove, onGrab, isGrabbing}: {onMove: (direction: string)
             </button>
         </div>
     );
-}
+};
 
 export default ControlPanel;

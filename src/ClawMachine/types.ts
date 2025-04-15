@@ -1,15 +1,15 @@
 export interface IPosition {
-    x: number,
-    y: number,
+    x: number
+    y: number
 }
 
 export interface IConfig {
-    position: IPosition,
+    position: IPosition
 }
 
 export interface IApi {
-    prizeUrl: string,
-    id: string,
+    prizeUrl: string
+    id: string
 }
 
 export type IMergeRow = IConfig & IApi;

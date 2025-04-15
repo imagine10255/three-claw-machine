@@ -13,7 +13,7 @@ function ControlPanel({onMove, onGrab, isGrabbing}: {onMove: (direction: string)
                 {isGrabbing ? '松开' : '抓取'}
             </button>
         </div>
-    )
+    );
 }
 
 export default ControlPanel;

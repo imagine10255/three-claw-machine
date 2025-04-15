@@ -1,6 +1,6 @@
 
 // 娃娃组件
-import {useSphere} from "@react-three/cannon";
+import {useSphere} from '@react-three/cannon';
 
 
 interface DollProps {
@@ -16,7 +16,7 @@ function Doll({position, color, size = 2}: DollProps) {
         position,
         args: [size / 2],
         type: 'Dynamic'
-    }))
+    }));
 
     return (
         <mesh ref={ref} castShadow>
@@ -29,7 +29,7 @@ function Doll({position, color, size = 2}: DollProps) {
                 emissiveIntensity={0.2}
             />
         </mesh>
-    )
+    );
 }
 
 export default Doll;

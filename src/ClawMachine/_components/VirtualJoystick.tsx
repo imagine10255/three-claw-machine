@@ -1,8 +1,8 @@
-import { useEffect, useRef } from 'react';
-import nipplejs, { JoystickManager, JoystickManagerOptions, EventData, JoystickOutputData } from 'nipplejs';
+import {useFrame} from '@react-three/fiber';
+import nipplejs, {EventData, JoystickManager, JoystickManagerOptions, JoystickOutputData} from 'nipplejs';
+import {useEffect, useRef} from 'react';
 import styled from 'styled-components';
-import {Quaternion, Vector3} from "three";
-import {useFrame} from "@react-three/fiber";
+import {Quaternion, Vector3} from 'three';
 
 interface IPosition {
     x: number
@@ -12,13 +12,13 @@ interface IPosition {
 
 interface Props {
     // onMove: (position: IPosition) => void;
-    onMove: (direction: string) => void;
-    onMoveEnd?: () => void;
+    onMove: (direction: string) => void
+    onMoveEnd?: () => void
 }
 
 const VirtualJoystick = ({
-  onMove,
-  onMoveEnd
+    onMove,
+    onMoveEnd
 }: Props) => {
     const joystickRef = useRef<HTMLDivElement>(null);
     const managerRef = useRef<JoystickManager | null>(null);
@@ -40,7 +40,7 @@ const VirtualJoystick = ({
         const options: JoystickManagerOptions = {
             zone: joystickRef.current,
             mode: 'static',
-            position: { left: '50%', top: '50%' },
+            position: {left: '50%', top: '50%'},
             color: 'white',
             size: 100,
             lockX: false,
@@ -50,7 +50,7 @@ const VirtualJoystick = ({
         managerRef.current = nipplejs.create(options);
 
         // 監聽搖桿移動事件
-        managerRef.current.on("start", function (evt, data) {
+        managerRef.current.on('start', function (evt, data) {
             canmove = true;
             // hostWalk();   //人物行走动画
             // controls.enabled = false;
@@ -148,7 +148,7 @@ const VirtualJoystick = ({
         }
 
 
-    }
+    };
 
 
 

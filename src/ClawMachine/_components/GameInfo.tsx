@@ -6,7 +6,7 @@ function GameInfo({dolls, caught}: {dolls: number, caught: number}) {
             <p>剩余娃娃: {dolls}</p>
             <p>已抓取: {caught}</p>
         </div>
-    )
+    );
 }
 
 

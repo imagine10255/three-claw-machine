@@ -1,4 +1,5 @@
 import ClawMachine, {IApi, TTargetIndex} from './ClawMachine';
+import DemoCubeHeap from "@/DemoCubeHeap";
 
 
 const input: IApi[] = [
@@ -39,5 +40,8 @@ const target: TTargetIndex = 1; // 目標
 const times = 1; // 圈數
 
 export default function App() {
-    return <ClawMachine data={input} target={target} times={times}/>;
+    return <div style={{width: '100vw', height: '100vh'}}>
+        {/*<DemoCubeHeap/>*/}
+        <ClawMachine/>
+    </div>;
 }

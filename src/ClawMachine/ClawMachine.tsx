@@ -20,7 +20,7 @@ interface Props {
 }
 
 // 主遊戲組件
-const ClawMachine: React.FC<Props> = ({data}) => {
+const ClawMachine = () => {
     const [isGrabbing, setIsGrabbing] = useState<boolean>(false);
     const [caughtDolls, setCaughtDolls] = useState<number>(0);
     const baseSpeed = 0.2;

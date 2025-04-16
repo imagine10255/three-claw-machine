@@ -4,5 +4,6 @@ export interface IPlaneProps {
     position: Triplet
     args: Triplet
     color: string
+    isBottom?: boolean
 }
 

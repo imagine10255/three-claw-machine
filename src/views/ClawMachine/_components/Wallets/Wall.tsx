@@ -1,7 +1,7 @@
 import {useBox} from '@react-three/cannon';
+import {useLoader} from '@react-three/fiber';
 import {Mesh} from 'three';
-import { useLoader } from '@react-three/fiber';
-import { TextureLoader } from 'three';
+import {TextureLoader} from 'three';
 import * as THREE from 'three';
 
 import {IWallProps} from './types';

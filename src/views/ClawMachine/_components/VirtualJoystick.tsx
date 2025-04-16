@@ -4,6 +4,8 @@ import {useEffect, useRef} from 'react';
 import styled from 'styled-components';
 import {Quaternion, Vector3} from 'three';
 
+import {EDirectionState} from '@/views/ClawMachine/_components/Claw';
+
 interface IPosition {
     x: number
     y: number
@@ -12,7 +14,7 @@ interface IPosition {
 
 interface Props {
     // onMove: (position: IPosition) => void;
-    onMove: (direction: string) => void
+    onMove: (direction: EDirectionState) => void
     onMoveEnd?: () => void
 }
 
@@ -72,7 +74,7 @@ const VirtualJoystick = ({
             // forward.normalize();
             // forward.multiplyScalar(movedistance * 0.01 * delta);
             console.log('data.direction?.x', data.direction);
-            onMove(data.direction?.angle);
+            onMove(data.direction?.angle as EDirectionState);
             // moveIntervalRef.current = data;
             /*if (data.direction) {
                 canmove = true;
@@ -123,32 +125,32 @@ const VirtualJoystick = ({
     }, [onMove, onMoveEnd]);
 
 
-    const move = (delta: number) => {
-        // move.x = (keysPressed.current.has('ArrowRight') ? 1 : 0) - (keysPressed.current.has('ArrowLeft') ? 1 : 0);
-        // move.z = (keysPressed.current.has('ArrowDown') ? 1 : 0) - (keysPressed.current.has('ArrowUp') ? 1 : 0);
-        // move.normalize();
-
-        // if (!move.equals(new Vector3(0, 0, 0))) {
-        //     currentForce.current += move.length() * baseSpeed;
-        //     currentForce.current = Math.min(currentForce.current, baseSpeed);
-        // } else {
-        //     currentForce.current = Math.max(currentForce.current - lerpFactor, 0);
-        // }
-        const move = new Vector3();
-        if(moveIntervalRef.current){
-            if(moveIntervalRef.current.direction){
-                const position = moveIntervalRef.current.position;
-                onMove(moveIntervalRef.current.direction.x || moveIntervalRef.current.direction.y);
-                // onMove({
-                //     x: lastPositionRef.current.x + position.x,
-                //     y: 0,
-                //     z: lastPositionRef.current.y + position.y
-                // })
-            }
-        }
-
-
-    };
+    // const move = (delta: number) => {
+    //     // move.x = (keysPressed.current.has('ArrowRight') ? 1 : 0) - (keysPressed.current.has('ArrowLeft') ? 1 : 0);
+    //     // move.z = (keysPressed.current.has('ArrowDown') ? 1 : 0) - (keysPressed.current.has('ArrowUp') ? 1 : 0);
+    //     // move.normalize();
+    //
+    //     // if (!move.equals(new Vector3(0, 0, 0))) {
+    //     //     currentForce.current += move.length() * baseSpeed;
+    //     //     currentForce.current = Math.min(currentForce.current, baseSpeed);
+    //     // } else {
+    //     //     currentForce.current = Math.max(currentForce.current - lerpFactor, 0);
+    //     // }
+    //     const move = new Vector3();
+    //     if(moveIntervalRef.current){
+    //         if(moveIntervalRef.current.direction){
+    //             const position = moveIntervalRef.current.position;
+    //             onMove(moveIntervalRef.current.direction.x || moveIntervalRef.current.direction.y);
+    //             // onMove({
+    //             //     x: lastPositionRef.current.x + position.x,
+    //             //     y: 0,
+    //             //     z: lastPositionRef.current.y + position.y
+    //             // })
+    //         }
+    //     }
+    //
+    //
+    // };
 
 
 

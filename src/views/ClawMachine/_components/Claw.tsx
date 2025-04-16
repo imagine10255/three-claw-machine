@@ -18,21 +18,25 @@ interface ArmProps {
 }
 
 export interface IClawRefProps{
-    startMoving: (direction: string) => void
+    startMoving: (direction: EDirectionState) => void
     stopMoving: () => void
 }
 
 
 enum EGrabState {
-    idle,
-    down,
-    up,
+    idle = 'idle',
+    down = 'down',
+    up = 'up',
+}
+export enum EDirectionState {
+    down = 'down',
+    up = 'up',
+    left = 'left',
+    right = 'right',
 }
 
 /**
  * 爪子
- * @param position
- * @param isGrabbing
  * @param ref
  */
 const Claw = ({}, ref: ForwardedRef<IClawRefProps>) => {
@@ -41,7 +45,6 @@ const Claw = ({}, ref: ForwardedRef<IClawRefProps>) => {
     // const [targetY, setTargetY] = useState(position[1]);
     // const isGrabbing = false;
 
-    const keysPressed = useRef<Set<string>>(new Set());
     const currentDirection = useRef<string | null>(null);
     const grabStateRef = useRef<EGrabState>(EGrabState.idle);
 
@@ -130,14 +133,13 @@ const Claw = ({}, ref: ForwardedRef<IClawRefProps>) => {
         const handleKeyDown = (e: KeyboardEvent) => {
 
             const direction = getDirectionFromKey(e.code);
-            if(['up','down','left','right'].includes(direction)){
+            if(direction && [EDirectionState.up, EDirectionState.down, EDirectionState.left, EDirectionState.right].includes(direction)){
+                e.preventDefault();
                 startMoving(direction);
-                e.preventDefault();
 
-            }else if(direction === 'grasp'){
+            }else if(e.code === 'Space'){
+                e.preventDefault();
                 grabStateRef.current = EGrabState.down;
-                e.preventDefault();
-
             }
         };
 
@@ -158,7 +160,7 @@ const Claw = ({}, ref: ForwardedRef<IClawRefProps>) => {
 
     }, []);
 
-    const startMoving = (direction: string) => {
+    const startMoving = (direction: EDirectionState) => {
         if (!direction) return;
         currentDirection.current = direction;
     };
@@ -173,28 +175,27 @@ const Claw = ({}, ref: ForwardedRef<IClawRefProps>) => {
      * @param delta
      */
     const onGrab = (delta: number) => {
-        if (clawRef.current) {
-            const move = new Vector3();
-            move.y = -1;
+        if(grabStateRef.current === EGrabState.idle) return;
+        if(!clawRef.current) return;
 
-            move.normalize();
-            const baseSpeed = 7;
-            // if (!move.equals(new Vector3(0, 0, 0))) {
-            if(grabStateRef.current === EGrabState.down) {
-                // 下降
-                clawRef.current.position.y += move.y * baseSpeed * delta; // 更新 x 轴位置
-                if (clawRef.current.position.y < -5) {
-                    grabStateRef.current = EGrabState.up;
-                }
-            }
-            else if(grabStateRef.current === EGrabState.up){
-                // 上升
-                clawRef.current.position.y -= move.y * baseSpeed * delta; // 更新 x 轴位置
-                if (clawRef.current.position.y >= 0) {
-                    grabStateRef.current = EGrabState.idle;
-                }
-            }
 
+        const baseSpeed = 7;
+        const currentY = clawRef.current.position.y;
+
+        if (grabStateRef.current === EGrabState.down) {
+            clawApi.velocity.set(0, -baseSpeed, 0);
+            if (currentY < -5) {
+                grabStateRef.current = EGrabState.up;
+                clawApi.velocity.set(0, 0, 0);
+            }
+        } else if (grabStateRef.current === EGrabState.up) {
+            clawApi.velocity.set(0, baseSpeed, 0);
+            if (currentY >= 0) {
+                grabStateRef.current = EGrabState.idle;
+                clawApi.velocity.set(0, 0, 0);
+            }
+        } else {
+            clawApi.velocity.set(0, 0, 0);
         }
     };
 
@@ -204,17 +205,21 @@ const Claw = ({}, ref: ForwardedRef<IClawRefProps>) => {
      * @param delta
      */
     const onMove = (delta: number) => {
+        if(grabStateRef.current === EGrabState.down) return;
+        if(!clawRef.current) return;
+
+
         const move = new Vector3();
 
         const direction = currentDirection.current;
         if (direction) {
-            if (direction === 'left') {
+            if (direction === EDirectionState.left) {
                 move.x = -1;
-            } else if (direction === 'right') {
+            } else if (direction === EDirectionState.right) {
                 move.x = 1;
-            } else if (direction === 'up') {
+            } else if (direction === EDirectionState.up) {
                 move.z = -1;
-            } else if (direction === 'down') {
+            } else if (direction === EDirectionState.down) {
                 move.z = 1;
             }
 
@@ -234,20 +239,18 @@ const Claw = ({}, ref: ForwardedRef<IClawRefProps>) => {
     };
 
 
-    const getDirectionFromKey = (key: string): string => {
+    const getDirectionFromKey = (key: string): EDirectionState|null => {
         switch (key) {
         case 'ArrowUp':
-            return 'up';
+            return EDirectionState.up;
         case 'ArrowDown':
-            return 'down';
+            return EDirectionState.down;
         case 'ArrowLeft':
-            return 'left';
+            return EDirectionState.left;
         case 'ArrowRight':
-            return 'right';
-        case 'Space':
-            return 'grasp';
+            return EDirectionState.right;
         default:
-            return '';
+            return null;
         }
     };
 

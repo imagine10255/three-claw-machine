@@ -214,7 +214,13 @@ const Claw = ({
 
     return (
         <>
+            {/* 固定在天花板上的绳子 */}
+            <Cable
+                length={cableLength}
+                position={[clawPosition.current[0], initY - cableLength/2, clawPosition.current[2]]}
+            />
 
+            {/* 爪子主体 */}
             <RigidBody
                 ref={clawRef}
                 type="dynamic"
@@ -222,37 +228,14 @@ const Claw = ({
                 colliders="cuboid"
                 canSleep={false}
                 userData={{tag: 'Claw'}}
-                onCollisionEnter={(e) => {
-                    const tag = e.other;
-                    // console.log('tag', tag);
-                    /* if (tag === 'Box' || tag === 'Plane' && grabStateRef.current === EGrabState.down) {
-                        grabStateRef.current = EGrabState.up;
-                        isGrabbingRef.current = true;
-                    }*/
-                }}
-                // receiveShadow
-                // castShadow
+                lockRotations={true} // 锁定旋转
+                lockTranslations={true} // 锁定所有方向的移动
             >
-                <Cable
-                    length={cableLength}
-                    position={[clawPosition.current[0], initY - cableLength/2, clawPosition.current[2]]}
-                />
                 {/* 爪子基座 */}
-                {/*<primitive object={baseBody}/>*/}
-                <mesh
-                    // position={[0, baseY, 0]} castShadow
-                >
+                <mesh position={[0, 0, 0]}>
                     <boxGeometry args={[2.8, 0.5, 2.8]}/>
                     <meshStandardMaterial color="#555555" metalness={0.8} roughness={0.2}/>
                 </mesh>
-
-                {/* 爪子连接部分 */}
-                {/*{connectorProps.map((props, i) => (*/}
-                {/*    <mesh key={`connector-${i}`} position={props.position} castShadow>*/}
-                {/*        <cylinderGeometry args={[...props.args]}/>*/}
-                {/*        <meshStandardMaterial color="#777777" metalness={0.6} roughness={0.3}/>*/}
-                {/*    </mesh>*/}
-                {/*))}*/}
 
                 {/* 爪子手臂 */}
                 {armProps.map((props, i) => {
@@ -263,7 +246,6 @@ const Claw = ({
                         rotation={props.rotation}
                     />;
                 })}
-
             </RigidBody>
         </>
     );

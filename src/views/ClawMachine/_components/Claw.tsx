@@ -35,6 +35,9 @@ export enum EDirectionState {
     right = 'right',
 }
 
+const initY = 12;
+
+
 /**
  * 爪子
  * @param ref
@@ -47,6 +50,16 @@ const Claw = ({}, ref: ForwardedRef<IClawRefProps>) => {
 
     const currentDirection = useRef<string | null>(null);
     const grabStateRef = useRef<EGrabState>(EGrabState.idle);
+    const isGrabbingRef = useRef(false); // 新增
+
+    const clawYRef = useRef(initY);
+
+    useEffect(() => {
+        const unsubscribe = clawApi.position.subscribe(([x, y]) => {
+            clawYRef.current = y;
+        });
+        return unsubscribe;
+    }, []);
 
 
     const [clawRef, clawApi] = useBox(() => ({
@@ -54,7 +67,7 @@ const Claw = ({}, ref: ForwardedRef<IClawRefProps>) => {
         args: [1, 1, 1],
         position: [
             1,
-            12,
+            initY,
             2
         ],
         type: 'Dynamic',
@@ -65,10 +78,10 @@ const Claw = ({}, ref: ForwardedRef<IClawRefProps>) => {
         // collisionResponse: true,
         onCollide: (e) => {
             // console.log('Claw collided', e.target);
-            const tag = (e.body as any).userData;
-            console.log('tag', tag);
-            if (tag === 'box') {
-                console.log('撞到盒子了！');
+            const tag = (e.body as any).userData?.tag;
+            if (tag === 'Box' || tag === 'Plane' && grabStateRef.current === EGrabState.down) { // 修改
+                grabStateRef.current = EGrabState.up;
+                isGrabbingRef.current = true; // 修改
             }
 
         }
@@ -178,24 +191,20 @@ const Claw = ({}, ref: ForwardedRef<IClawRefProps>) => {
         if(grabStateRef.current === EGrabState.idle) return;
         if(!clawRef.current) return;
 
-
         const baseSpeed = 7;
-        const currentY = clawRef.current.position.y;
+        const currentY = clawYRef.current;
 
         if (grabStateRef.current === EGrabState.down) {
             clawApi.velocity.set(0, -baseSpeed, 0);
-            if (currentY < -5) {
-                grabStateRef.current = EGrabState.up;
-                clawApi.velocity.set(0, 0, 0);
-            }
+
         } else if (grabStateRef.current === EGrabState.up) {
             clawApi.velocity.set(0, baseSpeed, 0);
-            if (currentY >= 0) {
+
+            if (currentY >= initY) {
                 grabStateRef.current = EGrabState.idle;
-                clawApi.velocity.set(0, 0, 0);
+                //     isGrabbingRef.current = false; // 修改
+                // clawApi.velocity.set(0, 0, 0);
             }
-        } else {
-            clawApi.velocity.set(0, 0, 0);
         }
     };
 

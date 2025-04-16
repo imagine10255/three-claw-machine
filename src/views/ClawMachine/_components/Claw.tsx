@@ -23,6 +23,12 @@ export interface IClawRefProps{
 }
 
 
+enum EGrabState {
+    idle,
+    down,
+    up,
+}
+
 /**
  * 爪子
  * @param position
@@ -33,11 +39,11 @@ const Claw = ({}, ref: ForwardedRef<IClawRefProps>) => {
     const baseRef = useRef<THREE.Group>(null);
     const cableRef = useRef<THREE.Mesh>(null);
     // const [targetY, setTargetY] = useState(position[1]);
-    const isGrabbing = false;
+    // const isGrabbing = false;
 
     const keysPressed = useRef<Set<string>>(new Set());
     const currentDirection = useRef<string | null>(null);
-    const isGraspRef = useRef<number>(0);
+    const grabStateRef = useRef<EGrabState>(EGrabState.idle);
 
 
     const [clawRef, clawApi] = useBox(() => ({
@@ -76,7 +82,7 @@ const Claw = ({}, ref: ForwardedRef<IClawRefProps>) => {
     const cableThickness = 0.2;
 
     // 爪子手臂 - 更加复杂的结构
-    const armProps: ArmProps[] = isGrabbing ? [
+    const armProps: ArmProps[] = grabStateRef.current === EGrabState.down ? [
         // 爪子内侧位置 (抓取状态)
         {position: [0.8, base2Y, 0.8], args: [0.4, 2.5, 0.4], rotation: [0, 0, 0.3]},
         {position: [-0.8, base2Y, 0.8], args: [0.4, 2.5, 0.4], rotation: [0, 0, -0.3]},
@@ -111,32 +117,7 @@ const Claw = ({}, ref: ForwardedRef<IClawRefProps>) => {
 
     useFrame((state, delta) => {
         onMove(delta);
-
-
-        const move = new Vector3();
-
-        if (clawRef.current) {
-            move.y = -1;
-
-            move.normalize();
-            const baseSpeed = 7;
-            // if (!move.equals(new Vector3(0, 0, 0))) {
-            if(isGraspRef.current === 1) {
-                // 下降
-                clawRef.current.position.y += move.y * baseSpeed * delta; // 更新 x 轴位置
-                if (clawRef.current.position.y < -5) {
-                    isGraspRef.current = 2;
-                }
-            }
-            else if(isGraspRef.current === 2){
-                // 上升
-                clawRef.current.position.y -= move.y * baseSpeed * delta; // 更新 x 轴位置
-                if (clawRef.current.position.y >= 0) {
-                    isGraspRef.current = 0;
-                }
-            }
-
-        }
+        onGrab(delta);
     });
 
     useImperativeHandle(ref, () => ({
@@ -154,7 +135,7 @@ const Claw = ({}, ref: ForwardedRef<IClawRefProps>) => {
                 e.preventDefault();
 
             }else if(direction === 'grasp'){
-                isGraspRef.current = 1;
+                grabStateRef.current = EGrabState.down;
                 e.preventDefault();
 
             }
@@ -187,6 +168,41 @@ const Claw = ({}, ref: ForwardedRef<IClawRefProps>) => {
     };
 
 
+    /**
+     * 抓取
+     * @param delta
+     */
+    const onGrab = (delta: number) => {
+        if (clawRef.current) {
+            const move = new Vector3();
+            move.y = -1;
+
+            move.normalize();
+            const baseSpeed = 7;
+            // if (!move.equals(new Vector3(0, 0, 0))) {
+            if(grabStateRef.current === EGrabState.down) {
+                // 下降
+                clawRef.current.position.y += move.y * baseSpeed * delta; // 更新 x 轴位置
+                if (clawRef.current.position.y < -5) {
+                    grabStateRef.current = EGrabState.up;
+                }
+            }
+            else if(grabStateRef.current === EGrabState.up){
+                // 上升
+                clawRef.current.position.y -= move.y * baseSpeed * delta; // 更新 x 轴位置
+                if (clawRef.current.position.y >= 0) {
+                    grabStateRef.current = EGrabState.idle;
+                }
+            }
+
+        }
+    };
+
+
+    /**
+     * 移動爪子
+     * @param delta
+     */
     const onMove = (delta: number) => {
         const move = new Vector3();
 

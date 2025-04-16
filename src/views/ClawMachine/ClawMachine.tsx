@@ -12,7 +12,7 @@ import ControlPanel from './_components/ControlPanel';
 import GameInfo from './_components/GameInfo';
 import Plane from './_components/Plane';
 import VirtualJoystick from './_components/VirtualJoystick';
-import Walls from './_components/Wall';
+import Walls from './_components/Walls';
 import {IApi, TTargetIndex} from './types';
 const niceColors = ['#99b898', '#fecea8', '#ff847c', '#e84a5f', '#2a363b'];
 
@@ -22,10 +22,11 @@ interface Props {
     times: number
 }
 
+const boxNumber: number = 201;
+const boxSize: number = 1.5;
+
 // 主遊戲組件
 const ClawMachine = () => {
-    const [number] = useState(200);
-    const [size] = useState(1.5);
 
     const [isGrabbing, setIsGrabbing] = useState<boolean>(false);
     const [caughtDolls, setCaughtDolls] = useState<number>(0);
@@ -53,15 +54,15 @@ const ClawMachine = () => {
 
 
     const colors = useMemo(() => {
-        const array = new Float32Array(number * 3);
+        const array = new Float32Array(boxNumber * 3);
         const color = new Color();
-        for (let i = 0; i < number; i++)
+        for (let i = 0; i < boxNumber; i++)
             color
                 .set(niceColors[Math.floor(Math.random() * 5)])
                 .convertSRGBToLinear()
                 .toArray(array, i * 3);
         return array;
-    }, [number]);
+    }, [boxNumber]);
 
     // useEffect(() => {
     //     const handleKeyDown = (e: KeyboardEvent) => {
@@ -213,7 +214,7 @@ const ClawMachine = () => {
                         ref={clawRef}
                     />
 
-                    <Boxes {...{colors, number, size}} />
+                    <Boxes {...{colors, number: boxNumber, size: boxSize}} />
                 </Physics>
 
                 <gridHelper

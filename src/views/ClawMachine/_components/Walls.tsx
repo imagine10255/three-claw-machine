@@ -85,17 +85,17 @@ const Wall = ({
             <boxGeometry args={args} />
             {isBack ? (
                 // 墙壁壁纸样式
-                <meshStandardMaterial 
-                    color="#8B4513" 
+                <meshStandardMaterial
+                    color="#8B4513"
                     roughness={0.8}
                     metalness={0.2}
                 />
             ) : (
                 // 玻璃样式
-                <meshStandardMaterial 
-                    color="#87CEEB" 
-                    transparent 
-                    opacity={0.2} 
+                <meshStandardMaterial
+                    color="#87CEEB"
+                    transparent
+                    opacity={0.2}
                 />
             )}
         </mesh>

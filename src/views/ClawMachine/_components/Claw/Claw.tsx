@@ -8,7 +8,7 @@ import {Vector3} from 'three';
 import Arm from './Arm';
 import {EDirectionState, EGrabState, IArmProps, IClawRefProps} from './types';
 
-const initY = 12;
+const initY = 11;
 
 /**
  * 爪子
@@ -78,6 +78,7 @@ const Claw = ({
     useFrame((state, delta) => {
         onMove(delta);
         onGrab(delta);
+
         // clawYRef.current = clawRef.current?.translation().y;
     });
 
@@ -133,15 +134,16 @@ const Claw = ({
         const baseSpeed = 7;
         const currentY = clawYRef.current;
 
-        // if (grabStateRef.current === EGrabState.down) {
-        //     clawRef.current?.setLinvel(0, -baseSpeed, 0);
-        // } else if (grabStateRef.current === EGrabState.up) {
-        //     clawRef.current?.setLinvel(0, baseSpeed, 0);
-        //
-        //     if (currentY >= initY) {
-        //         grabStateRef.current = EGrabState.idle;
-        //     }
-        // }
+        if (grabStateRef.current === EGrabState.down) {
+            clawRef.current?.setLinvel({x: 0, y: -baseSpeed, z: 0}, true);
+
+        } else if (grabStateRef.current === EGrabState.up) {
+            clawRef.current?.setLinvel({x: 0, y: baseSpeed, z: 0}, true);
+
+            if (currentY >= initY) {
+                grabStateRef.current = EGrabState.idle;
+            }
+        }
     };
 
     /**
@@ -150,6 +152,8 @@ const Claw = ({
      */
     const onMove = (delta: number) => {
         if (grabStateRef.current === EGrabState.down) return;
+        console.log('clawRef', clawRef);
+
         if (!clawRef.current) return;
 
         const move = new Vector3();
@@ -213,6 +217,7 @@ const Claw = ({
                 userData={{tag: 'Claw'}}
                 onCollisionEnter={(e) => {
                     const tag = e.other;
+                    // console.log('tag', tag);
                     /* if (tag === 'Box' || tag === 'Plane' && grabStateRef.current === EGrabState.down) {
                         grabStateRef.current = EGrabState.up;
                         isGrabbingRef.current = true;

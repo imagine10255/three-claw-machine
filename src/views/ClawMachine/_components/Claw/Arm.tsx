@@ -14,7 +14,7 @@ const Arm = ({
 }: IArmProps) => {
     return (
         <RigidBody
-            type="dynamic"
+            type="fixed"
             position={position}
             colliders="cuboid"
             canSleep={false}

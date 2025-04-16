@@ -1,7 +1,7 @@
 import {Triplet, useBox} from '@react-three/cannon';
-import {useFrame} from '@react-three/fiber';
-import {useEffect, useRef} from 'react';
-import type {InstancedMesh} from 'three';
+import {useMemo, useRef} from 'react';
+import {Color} from 'three';
+import * as THREE from 'three';
 
 interface InstancedGeometryProps {
     colors: Float32Array
@@ -9,68 +9,74 @@ interface InstancedGeometryProps {
     size: number
 }
 
-
-/**
- * Boxes
- * @param colors
- * @param number
- * @param size
- */
-const Boxes = ({
-    colors,
-    number,
-    size
-}: InstancedGeometryProps) => {
+const SingleBox = ({
+    size,
+    position,
+    color,
+    index
+}: {
+    size: number,
+    position: Triplet,
+    color: [number, number, number],
+    index: number,
+}) => {
     const args: Triplet = [size, size, size];
-    const [ref, {at}] = useBox(() => ({
+
+    const [ref] = useBox(() => ({
         mass: 1,
         args,
-        position: [
-            (Math.random() - 0.5) * 10,
-            Math.random() * 5 + 2,
-            (Math.random() - 0.5) * 10
-        ],
+        position,
         type: 'Dynamic',
         userData: {
-            tag: 'Box'
+            tag: 'Box',
+            id: index,
         },
         allowSleep: false,
         collisionResponse: true,
         material: {
             friction: 0.3,
-            restitution: 0.3
-        }
+            restitution: 0.3,
+        },
+        // onCollide: (e) => {
+        //     console.log(`Box ${index} 碰撞到`, e.body?.userData?.tag);
+        // }
     }),
-    useRef<InstancedMesh>(null),
+    useRef<THREE.Mesh>(null),
     );
 
-
-    // useFrame(() => {
-    //    // 一直產出
-    //     at(Math.floor(Math.random() * number)).position.set(0, Math.random() * 2, 0);
-    // });
-
-    useEffect(() => {
-        at(Math.floor(Math.random() * number)).position.set(
-            (Math.random() - 0.5) * 10,
-            Math.random() * 5 + 2,
-            (Math.random() - 0.5) * 10
-        );
-    }, []);
-
+    const boxColor = new Color(...color);
 
     return (
-        <instancedMesh
-            ref={ref}
-            receiveShadow
-            castShadow
-            args={[undefined, undefined, number]}
-        >
-            <boxGeometry args={args}>
-                <instancedBufferAttribute attach="attributes-color" args={[colors, 3]} />
-            </boxGeometry>
-            <meshLambertMaterial vertexColors />
-        </instancedMesh>
+        <mesh ref={ref} castShadow receiveShadow>
+            <boxGeometry args={args} />
+            <meshLambertMaterial color={boxColor} />
+        </mesh>
+    );
+};
+
+const Boxes = ({colors, number, size}: InstancedGeometryProps) => {
+    const boxes = useMemo(() => {
+        return Array.from({length: number}, (_, i) => {
+            const position: Triplet = [
+                (Math.random() - 0.5) * 10,
+                Math.random() * 5 + 2,
+                (Math.random() - 0.5) * 10
+            ];
+            const color: [number, number, number] = [
+                colors[i * 3],
+                colors[i * 3 + 1],
+                colors[i * 3 + 2]
+            ];
+            return {position, color, index: i};
+        });
+    }, [number, size, colors]);
+
+    return (
+        <>
+            {boxes.map(({position, color, index}) => (
+                <SingleBox key={index} position={position} color={color} size={size} index={index} />
+            ))}
+        </>
     );
 };
 

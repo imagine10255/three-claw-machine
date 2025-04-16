@@ -5,6 +5,7 @@ import {BufferGeometry, Mesh, NormalBufferAttributes, Object3D, Object3DEventMap
 interface IWallProps {
     position: Triplet
     args: Triplet
+    isBack?: boolean
 }
 
 
@@ -14,22 +15,23 @@ interface IWallProps {
 const Walls = () => {
     const wallProps: IWallProps[] = [
         {
-            // 后壁
+            // 后壁 - 改为墙壁壁纸
             position: [0, 0, 10],
-            args: [20, 12, 0.5]
+            args: [20, 12, 0.5],
         },
         {
-            // 前壁
+            // 前壁 - 保持玻璃
             position: [0, 0, -10],
-            args: [20, 12, 0.5]
+            args: [20, 12, 0.5],
+            isBack: true,
         },
         {
-            // 右壁
+            // 右壁 - 保持玻璃
             position: [10, 7, 0],
             args: [0.5, 12, 20]
         },
         {
-            // 左壁
+            // 左壁 - 保持玻璃
             position: [-10, 0, 0],
             args: [0.5, 12, 20]
         }
@@ -49,6 +51,7 @@ const Walls = () => {
                         ]
                     }
                     args={props.args}
+                    isBack={props.isBack}
                 />;
             })}
         </>
@@ -60,10 +63,12 @@ const Walls = () => {
  * 牆
  * @param position
  * @param args
+ * @param isBack
  */
 const Wall = ({
     position,
-    args
+    args,
+    isBack
 }: IWallProps) => {
     const [ref] = useBox<Mesh>(() => ({
         mass: 0,
@@ -78,7 +83,21 @@ const Wall = ({
     return (
         <mesh ref={ref} receiveShadow>
             <boxGeometry args={args} />
-            <meshStandardMaterial color="#87CEEB" transparent opacity={0.2} />
+            {isBack ? (
+                // 墙壁壁纸样式
+                <meshStandardMaterial 
+                    color="#8B4513" 
+                    roughness={0.8}
+                    metalness={0.2}
+                />
+            ) : (
+                // 玻璃样式
+                <meshStandardMaterial 
+                    color="#87CEEB" 
+                    transparent 
+                    opacity={0.2} 
+                />
+            )}
         </mesh>
     );
 };

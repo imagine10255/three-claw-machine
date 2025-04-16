@@ -8,11 +8,6 @@ import {Vector3} from 'three';
 import Arm from './Arm';
 import {IArmProps} from './types';
 
-// 型別定義
-interface ClawProps {
-    position: [number, number, number]
-    isGrabbing: boolean
-}
 
 
 export interface IClawRefProps{
@@ -40,7 +35,8 @@ const initY = 12;
  * 爪子
  * @param ref
  */
-const Claw = ({}, ref: ForwardedRef<IClawRefProps>) => {
+const Claw = (
+    {}, ref: ForwardedRef<IClawRefProps>) => {
     const currentDirection = useRef<string | null>(null);
     const grabStateRef = useRef<EGrabState>(EGrabState.idle);
     const isGrabbingRef = useRef(false); // 新增

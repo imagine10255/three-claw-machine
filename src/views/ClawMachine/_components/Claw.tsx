@@ -40,12 +40,12 @@ const Claw = ({}, ref: ForwardedRef<IClawRefProps>) => {
     const isGraspRef = useRef<number>(0);
 
 
-    const [clawRef, {at}] = useBox(() => ({
-        mass: 1,
+    const [clawRef, clawApi] = useBox(() => ({
+        mass: 0,
         args: [1, 1, 1],
         position: [
             1,
-            20,
+            12,
             2
         ],
         type: 'Dynamic',
@@ -76,68 +76,68 @@ const Claw = ({}, ref: ForwardedRef<IClawRefProps>) => {
     const cableThickness = 0.2;
 
     // 爪子手臂 - 更加复杂的结构
-    // const armProps: ArmProps[] = isGrabbing ? [
-    //     // 爪子内侧位置 (抓取状态)
-    //     {position: [0.8, base2Y, 0.8], args: [0.4, 2.5, 0.4], rotation: [0, 0, 0.3]},
-    //     {position: [-0.8, base2Y, 0.8], args: [0.4, 2.5, 0.4], rotation: [0, 0, -0.3]},
-    //     {position: [0.8, base2Y, -0.8], args: [0.4, 2.5, 0.4], rotation: [0, 0, 0.3]},
-    //     {position: [-0.8, base2Y, -0.8], args: [0.4, 2.5, 0.4], rotation: [0, 0, -0.3]},
-    //
-    //     // 爪子尖端 (抓取状态)
-    //     {position: [1, base2Y, 1], args: [0.3, 0.8, 0.3], rotation: [0, 0, 0.5]},
-    //     {position: [-1, base2Y, 1], args: [0.3, 0.8, 0.3], rotation: [0, 0, -0.5]},
-    //     {position: [1, base2Y, -1], args: [0.3, 0.8, 0.3], rotation: [0, 0, 0.5]},
-    //     {position: [-1, base2Y, -1], args: [0.3, 0.8, 0.3], rotation: [0, 0, -0.5]},
-    // ] : [
-    //     // 爪子外侧位置 (非抓取状态)
-    //     {position: [0.8, base2Y, 0.8], args: [0.4, 2.5, 0.4], rotation: [0, 0, -0.3]},
-    //     {position: [-0.8, base2Y, 0.8], args: [0.4, 2.5, 0.4], rotation: [0, 0, 0.3]},
-    //     {position: [0.8, base2Y, -0.8], args: [0.4, 2.5, 0.4], rotation: [0, 0, -0.3]},
-    //     {position: [-0.8, base2Y, -0.8], args: [0.4, 2.5, 0.4], rotation: [0, 0, 0.3]},
-    //
-    //     // 爪子尖端 (非抓取状态)
-    //     {position: [1, base2Y, 1], args: [0.3, 0.8, 0.3], rotation: [0, 0, -0.5]},
-    //     {position: [-1, base2Y, 1], args: [0.3, 0.8, 0.3], rotation: [0, 0, 0.5]},
-    //     {position: [1, base2Y, -1], args: [0.3, 0.8, 0.3], rotation: [0, 0, -0.5]},
-    //     {position: [-1, base2Y, -1], args: [0.3, 0.8, 0.3], rotation: [0, 0, 0.5]},
-    // ];
-    //
-    // // 爪子连接部分
-    // const connectorProps: { position: [number, number, number], args: [number, number, number] }[] = [
-    //     {position: [0, baseY, 0], args: [0.5, 0.5, 0.5]},
-    //     {position: [0, base2Y, 0], args: [0.5, 0.5, 0.5]},
-    // ];
+    const armProps: ArmProps[] = isGrabbing ? [
+        // 爪子内侧位置 (抓取状态)
+        {position: [0.8, base2Y, 0.8], args: [0.4, 2.5, 0.4], rotation: [0, 0, 0.3]},
+        {position: [-0.8, base2Y, 0.8], args: [0.4, 2.5, 0.4], rotation: [0, 0, -0.3]},
+        {position: [0.8, base2Y, -0.8], args: [0.4, 2.5, 0.4], rotation: [0, 0, 0.3]},
+        {position: [-0.8, base2Y, -0.8], args: [0.4, 2.5, 0.4], rotation: [0, 0, -0.3]},
+
+        // 爪子尖端 (抓取状态)
+        {position: [1, base2Y, 1], args: [0.3, 0.8, 0.3], rotation: [0, 0, 0.5]},
+        {position: [-1, base2Y, 1], args: [0.3, 0.8, 0.3], rotation: [0, 0, -0.5]},
+        {position: [1, base2Y, -1], args: [0.3, 0.8, 0.3], rotation: [0, 0, 0.5]},
+        {position: [-1, base2Y, -1], args: [0.3, 0.8, 0.3], rotation: [0, 0, -0.5]},
+    ] : [
+        // 爪子外侧位置 (非抓取状态)
+        {position: [0.8, base2Y, 0.8], args: [0.4, 2.5, 0.4], rotation: [0, 0, -0.3]},
+        {position: [-0.8, base2Y, 0.8], args: [0.4, 2.5, 0.4], rotation: [0, 0, 0.3]},
+        {position: [0.8, base2Y, -0.8], args: [0.4, 2.5, 0.4], rotation: [0, 0, -0.3]},
+        {position: [-0.8, base2Y, -0.8], args: [0.4, 2.5, 0.4], rotation: [0, 0, 0.3]},
+
+        // 爪子尖端 (非抓取状态)
+        {position: [1, base2Y, 1], args: [0.3, 0.8, 0.3], rotation: [0, 0, -0.5]},
+        {position: [-1, base2Y, 1], args: [0.3, 0.8, 0.3], rotation: [0, 0, 0.5]},
+        {position: [1, base2Y, -1], args: [0.3, 0.8, 0.3], rotation: [0, 0, -0.5]},
+        {position: [-1, base2Y, -1], args: [0.3, 0.8, 0.3], rotation: [0, 0, 0.5]},
+    ];
+
+    // 爪子连接部分
+    const connectorProps: { position: [number, number, number], args: [number, number, number] }[] = [
+        {position: [0, baseY, 0], args: [0.5, 0.5, 0.5]},
+        {position: [0, base2Y, 0], args: [0.5, 0.5, 0.5]},
+    ];
 
 
-    // useFrame((state, delta) => {
-    //     onMove(delta);
-    //
-    //
-    //     const move = new Vector3();
-    //
-    //     if (clawRef.current) {
-    //         move.y = -1;
-    //
-    //         move.normalize();
-    //         const baseSpeed = 7;
-    //         // if (!move.equals(new Vector3(0, 0, 0))) {
-    //         if(isGraspRef.current === 1) {
-    //             // 下降
-    //             clawRef.current.position.y += move.y * baseSpeed * delta; // 更新 x 轴位置
-    //             if (clawRef.current.position.y < -5) {
-    //                 isGraspRef.current = 2;
-    //             }
-    //         }
-    //         else if(isGraspRef.current === 2){
-    //             // 上升
-    //             clawRef.current.position.y -= move.y * baseSpeed * delta; // 更新 x 轴位置
-    //             if (clawRef.current.position.y >= 0) {
-    //                 isGraspRef.current = 0;
-    //             }
-    //         }
-    //
-    //     }
-    // });
+    useFrame((state, delta) => {
+        onMove(delta);
+
+
+        const move = new Vector3();
+
+        if (clawRef.current) {
+            move.y = -1;
+
+            move.normalize();
+            const baseSpeed = 7;
+            // if (!move.equals(new Vector3(0, 0, 0))) {
+            if(isGraspRef.current === 1) {
+                // 下降
+                clawRef.current.position.y += move.y * baseSpeed * delta; // 更新 x 轴位置
+                if (clawRef.current.position.y < -5) {
+                    isGraspRef.current = 2;
+                }
+            }
+            else if(isGraspRef.current === 2){
+                // 上升
+                clawRef.current.position.y -= move.y * baseSpeed * delta; // 更新 x 轴位置
+                if (clawRef.current.position.y >= 0) {
+                    isGraspRef.current = 0;
+                }
+            }
+
+        }
+    });
 
     useImperativeHandle(ref, () => ({
         startMoving,
@@ -191,27 +191,30 @@ const Claw = ({}, ref: ForwardedRef<IClawRefProps>) => {
         const move = new Vector3();
 
         const direction = currentDirection.current;
-        if (direction && baseRef.current) {
+        if (direction) {
             if (direction === 'left') {
-                move.x = -1; // 向左移动
+                move.x = -1;
             } else if (direction === 'right') {
-                move.x = 1; // 向右移动
-            }else if (direction === 'up') {
-                move.z = -1; // 向前移动
+                move.x = 1;
+            } else if (direction === 'up') {
+                move.z = -1;
             } else if (direction === 'down') {
-                move.z = 1; // 向後移动
+                move.z = 1;
             }
+
             move.normalize();
-            const baseSpeed = 20;
+            const baseSpeed = 5;
+
             if (!move.equals(new Vector3(0, 0, 0))) {
-                baseRef.current.position.x += move.x * baseSpeed * delta; // 更新 x 轴位置
-                baseRef.current.position.z += move.z * baseSpeed * delta; // 更新 z 轴位置
+                const velocityX = move.x * baseSpeed;
+                const velocityZ = move.z * baseSpeed;
+                clawApi.velocity.set(velocityX, 0, velocityZ);
             } else {
-                // 停止移动时不需要更新位置
+                clawApi.velocity.set(0, 0, 0);
             }
-
+        } else {
+            clawApi.velocity.set(0, 0, 0);
         }
-
     };
 
 
@@ -259,25 +262,25 @@ const Claw = ({}, ref: ForwardedRef<IClawRefProps>) => {
                 </mesh>
 
                 {/* 爪子连接部分 */}
-                {/*{connectorProps.map((props, i) => (*/}
-                {/*    <mesh key={`connector-${i}`} position={props.position} castShadow>*/}
-                {/*        <cylinderGeometry args={[...props.args]}/>*/}
-                {/*        <meshStandardMaterial color="#777777" metalness={0.6} roughness={0.3}/>*/}
-                {/*    </mesh>*/}
-                {/*))}*/}
+                {connectorProps.map((props, i) => (
+                    <mesh key={`connector-${i}`} position={props.position} castShadow>
+                        <cylinderGeometry args={[...props.args]}/>
+                        <meshStandardMaterial color="#777777" metalness={0.6} roughness={0.3}/>
+                    </mesh>
+                ))}
 
                 {/* 爪子手臂 */}
-                {/*{armProps.map((props, i) => (*/}
-                {/*    <mesh*/}
-                {/*        key={`arm-${i}`}*/}
-                {/*        position={props.position}*/}
-                {/*        rotation={props.rotation}*/}
-                {/*        castShadow*/}
-                {/*    >*/}
-                {/*        <boxGeometry args={props.args}/>*/}
-                {/*        <meshStandardMaterial color="#999999" metalness={0.5} roughness={0.4}/>*/}
-                {/*    </mesh>*/}
-                {/*))}*/}
+                {armProps.map((props, i) => (
+                    <mesh
+                        key={`arm-${i}`}
+                        position={props.position}
+                        rotation={props.rotation}
+                        castShadow
+                    >
+                        <boxGeometry args={props.args}/>
+                        <meshStandardMaterial color="#999999" metalness={0.5} roughness={0.4}/>
+                    </mesh>
+                ))}
             </group>
         </>
     );

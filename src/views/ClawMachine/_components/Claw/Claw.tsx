@@ -1,14 +1,16 @@
 // 爪子组件
 import {useFrame} from '@react-three/fiber';
 import {RapierRigidBody,RigidBody} from '@react-three/rapier';
-import React, {ForwardedRef, forwardRef, useEffect, useImperativeHandle, useRef} from 'react';
+import React, {ForwardedRef, forwardRef, useEffect, useImperativeHandle, useRef, useState} from 'react';
 import * as THREE from 'three';
 import {Vector3} from 'three';
 
 import Arm from './Arm';
+import Cable from './Cable';
 import {EDirectionState, EGrabState, IArmProps, IClawRefProps} from './types';
 
 const initY = 11;
+const maxCableLength = 20; // 最大绳子长度
 
 /**
  * 爪子
@@ -21,6 +23,8 @@ const Claw = ({
     const currentDirection = useRef<string | null>(null);
     const grabStateRef = useRef<EGrabState>(EGrabState.idle);
     const isGrabbingRef = useRef(false); // 新增
+    const [cableLength, setCableLength] = useState(0);
+    const clawPosition = useRef<[number, number, number]>([1, initY, 2]);
 
     const clawYRef = useRef(initY);
     const clawRef = useRef<RapierRigidBody>(null);
@@ -132,17 +136,26 @@ const Claw = ({
         if (!clawRef.current) return;
 
         const baseSpeed = 7;
-        const currentY = clawYRef.current;
 
         if (grabStateRef.current === EGrabState.down) {
-            clawRef.current?.setLinvel({x: 0, y: -baseSpeed, z: 0}, true);
+            // 放绳子
+            setCableLength(prev => {
+                const newLength = prev + baseSpeed * delta;
+                return Math.min(newLength, maxCableLength);
+            });
+            clawRef.current?.setLinvel({x: 0, y: 0, z: 0}, true);
 
         } else if (grabStateRef.current === EGrabState.up) {
-            clawRef.current?.setLinvel({x: 0, y: baseSpeed, z: 0}, true);
-
-            if (currentY >= initY) {
-                grabStateRef.current = EGrabState.idle;
-            }
+            // 收绳子
+            setCableLength(prev => {
+                const newLength = prev - baseSpeed * delta;
+                if (newLength <= 0) {
+                    grabStateRef.current = EGrabState.idle;
+                    return 0;
+                }
+                return newLength;
+            });
+            clawRef.current?.setLinvel({x: 0, y: 0, z: 0}, true);
         }
     };
 
@@ -201,17 +214,11 @@ const Claw = ({
 
     return (
         <>
-            {/* 爪子吊绳 - 总是从顶部垂下 */}
-            {/*<mesh ref={cableRef} castShadow>*/}
-            {/*    <cylinderGeometry args={[cableThickness, cableThickness, cableHeight, 12]}/>*/}
-            {/*    <meshStandardMaterial color="#666666"/>*/}
-            {/*</mesh>*/}
 
-            {/* 爪子主体 */}
             <RigidBody
                 ref={clawRef}
                 type="dynamic"
-                position={[1, initY, 2]}
+                position={[clawPosition.current[0], initY - cableLength, clawPosition.current[2]]}
                 colliders="cuboid"
                 canSleep={false}
                 userData={{tag: 'Claw'}}
@@ -226,6 +233,10 @@ const Claw = ({
                 // receiveShadow
                 // castShadow
             >
+                <Cable
+                    length={cableLength}
+                    position={[clawPosition.current[0], initY - cableLength/2, clawPosition.current[2]]}
+                />
                 {/* 爪子基座 */}
                 {/*<primitive object={baseBody}/>*/}
                 <mesh

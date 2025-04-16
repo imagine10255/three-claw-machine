@@ -1,12 +1,5 @@
-import {Triplet, useBox} from '@react-three/cannon';
-import {BufferGeometry, Mesh, NormalBufferAttributes, Object3D, Object3DEventMap} from 'three';
-
-
-interface IWallProps {
-    position: Triplet
-    args: Triplet
-    isBack?: boolean
-}
+import {IWallProps} from './types';
+import Wall from './Wall';
 
 
 /**
@@ -58,48 +51,5 @@ const Walls = () => {
     );
 };
 
-
-/**
- * 牆
- * @param position
- * @param args
- * @param isBack
- */
-const Wall = ({
-    position,
-    args,
-    isBack
-}: IWallProps) => {
-    const [ref] = useBox<Mesh>(() => ({
-        mass: 0,
-        position,
-        args,
-        type: 'Static',
-        userData: {
-            tag: 'wall'
-        },
-    }));
-
-    return (
-        <mesh ref={ref} receiveShadow>
-            <boxGeometry args={args} />
-            {isBack ? (
-                // 墙壁壁纸样式
-                <meshStandardMaterial
-                    color="#8B4513"
-                    roughness={0.8}
-                    metalness={0.2}
-                />
-            ) : (
-                // 玻璃样式
-                <meshStandardMaterial
-                    color="#87CEEB"
-                    transparent
-                    opacity={0.2}
-                />
-            )}
-        </mesh>
-    );
-};
 
 export default Walls;

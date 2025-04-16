@@ -1,28 +1,36 @@
 import {PlaneProps, Triplet, useBox, usePlane} from '@react-three/cannon';
 import {useRef} from 'react';
-import type {Mesh} from 'three';
+import  {Mesh} from 'three';
+import * as THREE from 'three';
 
+import {IPlaneProps} from './types';
 
-const args: Triplet = [20, .2, 20];
 
 /**
  * Plane
  */
-const Plane = () => {
-    const [ref] = useBox<Mesh>(() => ({
+const Plane = ({
+    position,
+    args,
+    color,
+}: IPlaneProps) => {
+
+    const [ref] = useBox(() => ({
         mass: 0,
-        position: [0, 0, 0],
-        args,
+        position: position,
+        args: args,
         type: 'Static',
         userData: {
             tag: 'Plane'
         },
-    }));
+    }),
+    useRef<THREE.Mesh>(null),
+    );
 
     return (
         <mesh ref={ref} receiveShadow>
             <boxGeometry args={args} />
-            <meshStandardMaterial color="#8B4513" />
+            <meshStandardMaterial color={color} />
         </mesh>
     );
 };

@@ -5,14 +5,14 @@ import {useEffect, useMemo, useRef, useState} from 'react';
 import styled from 'styled-components';
 import {Color} from 'three';
 
-import Boxes from '@/views/ClawMachine/_components/Boxes';
+import Boxes from '@/views/ClawMachine/_components/Boxes/Boxes';
 
 import Claw, {IClawRefProps} from './_components/Claw';
 import ControlPanel from './_components/ControlPanel';
 import GameInfo from './_components/GameInfo';
-import Plane from './_components/Plane';
+import Planes from './_components/Planes';
 import VirtualJoystick from './_components/VirtualJoystick';
-import Walls from './_components/Walls';
+import Walls from './_components/Wallets/Walls';
 import {IApi, TTargetIndex} from './types';
 const niceColors = ['#99b898', '#fecea8', '#ff847c', '#e84a5f', '#2a363b'];
 
@@ -22,7 +22,7 @@ interface Props {
     times: number
 }
 
-const boxNumber: number = 201;
+const boxNumber: number = 101;
 const boxSize: number = 1.5;
 
 // 主遊戲組件
@@ -182,10 +182,11 @@ const ClawMachine = () => {
                 camera={{
                     fov: 50,
                     position: [-14, 24, 34]
-
                 }}
                 shadows
-
+                gl={{
+                    localClippingEnabled: true
+                }}
             >
                 <color attach="background" args={['lightblue']} />
                 <ambientLight intensity={0.7} />
@@ -208,7 +209,7 @@ const ClawMachine = () => {
 
 
                 <Physics>
-                    <Plane />
+                    <Planes />
                     <Walls />
                     <Claw
                         ref={clawRef}

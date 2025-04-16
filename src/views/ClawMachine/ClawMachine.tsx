@@ -24,7 +24,7 @@ interface Props {
 
 // 主遊戲組件
 const ClawMachine = () => {
-    const [number] = useState(50);
+    const [number] = useState(200);
     const [size] = useState(1.5);
 
     const [isGrabbing, setIsGrabbing] = useState<boolean>(false);
@@ -180,7 +180,7 @@ const ClawMachine = () => {
             <Canvas
                 camera={{
                     fov: 50,
-                    position: [-1, 12, 34]
+                    position: [-14, 24, 34]
 
                 }}
                 shadows

@@ -91,7 +91,17 @@ const Claw = ({}, ref: ForwardedRef<IClawRefProps>) => {
 
 
     const baseY = 10;
-    const base2Y = 8;
+    const base2Y = -1;
+    const arg1Height = 1.5;
+    const arg2Height = 1;
+    const arm1 = {
+        y: arg1Height / -2,
+        args: [.4, arg1Height, .2] as ArmProps['args'],
+    };
+    const arm2 = {
+        y: (arg1Height * -1) + (arg2Height / -2) * .6,
+        args: [.4, arg2Height, .2] as ArmProps['args'],
+    };
 
     // 爪子线缆 - 调整高度
     const cableHeight = 25; // 固定高度，确保线缆总是从机器顶部垂下
@@ -100,28 +110,28 @@ const Claw = ({}, ref: ForwardedRef<IClawRefProps>) => {
     // 爪子手臂 - 更加复杂的结构
     const armProps: ArmProps[] = grabStateRef.current === EGrabState.down ? [
         // 爪子内侧位置 (抓取状态)
-        {position: [0.8, base2Y, 0.8], args: [0.4, 2.5, 0.4], rotation: [0, 0, 0.3]},
-        {position: [-0.8, base2Y, 0.8], args: [0.4, 2.5, 0.4], rotation: [0, 0, -0.3]},
-        {position: [0.8, base2Y, -0.8], args: [0.4, 2.5, 0.4], rotation: [0, 0, 0.3]},
-        {position: [-0.8, base2Y, -0.8], args: [0.4, 2.5, 0.4], rotation: [0, 0, -0.3]},
+        {position: [0.8, arm1.y, 0.8], args: arm1.args, rotation: [0, 0, 0.3]},
+        {position: [-0.8, arm1.y, 0.8], args: arm1.args, rotation: [0, 0, -0.3]},
+        {position: [0.8, arm1.y, -0.8], args: arm1.args, rotation: [0, 0, 0.3]},
+        {position: [-0.8, arm1.y, -0.8], args: arm1.args, rotation: [0, 0, -0.3]},
 
         // 爪子尖端 (抓取状态)
-        {position: [1, base2Y, 1], args: [0.3, 0.8, 0.3], rotation: [0, 0, 0.5]},
-        {position: [-1, base2Y, 1], args: [0.3, 0.8, 0.3], rotation: [0, 0, -0.5]},
-        {position: [1, base2Y, -1], args: [0.3, 0.8, 0.3], rotation: [0, 0, 0.5]},
-        {position: [-1, base2Y, -1], args: [0.3, 0.8, 0.3], rotation: [0, 0, -0.5]},
+        {position: [1, arm2.y, 1], args: arm2.args, rotation: [0, 0, 0.5]},
+        {position: [-1, arm2.y, 1], args: arm2.args, rotation: [0, 0, -0.5]},
+        {position: [1, arm2.y, -1], args: arm2.args, rotation: [0, 0, 0.5]},
+        {position: [-1, arm2.y, -1], args: arm2.args, rotation: [0, 0, -0.5]},
     ] : [
         // 爪子外侧位置 (非抓取状态)
-        {position: [0.8, base2Y, 0.8], args: [0.4, 2.5, 0.4], rotation: [0, 0, -0.3]},
-        {position: [-0.8, base2Y, 0.8], args: [0.4, 2.5, 0.4], rotation: [0, 0, 0.3]},
-        {position: [0.8, base2Y, -0.8], args: [0.4, 2.5, 0.4], rotation: [0, 0, -0.3]},
-        {position: [-0.8, base2Y, -0.8], args: [0.4, 2.5, 0.4], rotation: [0, 0, 0.3]},
+        {position: [1, arm1.y, 1], args: arm1.args, rotation: [-.3, .3, 0.3]},
+        {position: [-1, arm1.y, 1], args: arm1.args, rotation: [-.3, .3, -0.3]},
+        {position: [1, arm1.y, -1], args: arm1.args, rotation: [.3, .3, 0.3]},
+        {position: [-1, arm1.y, -1], args: arm1.args, rotation: [.3, .3, -0.3]},
 
         // 爪子尖端 (非抓取状态)
-        {position: [1, base2Y, 1], args: [0.3, 0.8, 0.3], rotation: [0, 0, -0.5]},
-        {position: [-1, base2Y, 1], args: [0.3, 0.8, 0.3], rotation: [0, 0, 0.5]},
-        {position: [1, base2Y, -1], args: [0.3, 0.8, 0.3], rotation: [0, 0, -0.5]},
-        {position: [-1, base2Y, -1], args: [0.3, 0.8, 0.3], rotation: [0, 0, 0.5]},
+        {position: [1, arm2.y, 1], args: arm2.args, rotation: [.3, .3, -0.3]},
+        {position: [-1, arm2.y, 1], args: arm2.args, rotation: [.3, .3, 0.3]},
+        {position: [1, arm2.y, -1], args: arm2.args, rotation: [-.3, .3, -0.3]},
+        {position: [-1, arm2.y, -1], args: arm2.args, rotation: [-.3, .3, 0.3]},
     ];
 
     // 爪子连接部分
@@ -290,12 +300,12 @@ const Claw = ({}, ref: ForwardedRef<IClawRefProps>) => {
                 </mesh>
 
                 {/* 爪子连接部分 */}
-                {connectorProps.map((props, i) => (
-                    <mesh key={`connector-${i}`} position={props.position} castShadow>
-                        <cylinderGeometry args={[...props.args]}/>
-                        <meshStandardMaterial color="#777777" metalness={0.6} roughness={0.3}/>
-                    </mesh>
-                ))}
+                {/*{connectorProps.map((props, i) => (*/}
+                {/*    <mesh key={`connector-${i}`} position={props.position} castShadow>*/}
+                {/*        <cylinderGeometry args={[...props.args]}/>*/}
+                {/*        <meshStandardMaterial color="#777777" metalness={0.6} roughness={0.3}/>*/}
+                {/*    </mesh>*/}
+                {/*))}*/}
 
                 {/* 爪子手臂 */}
                 {armProps.map((props, i) => (

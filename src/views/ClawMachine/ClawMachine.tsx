@@ -1,4 +1,4 @@
-import {Physics} from '@react-three/cannon';
+import {Physics} from '@react-three/rapier';
 import {OrbitControls} from '@react-three/drei';
 import {Canvas} from '@react-three/fiber';
 import {useMemo, useRef, useState} from 'react';
@@ -7,7 +7,7 @@ import {Color} from 'three';
 
 import Boxes from '@/views/ClawMachine/_components/Boxes/Boxes';
 
-import Claw, {IClawRefProps} from './_components/Claw/Claw';
+import Claw, {IClawRefProps} from './_components/Claw';
 import ControlPanel from './_components/ControlPanel';
 import GameInfo from './_components/GameInfo';
 import Planes from './_components/Planes';

@@ -1,7 +1,5 @@
-import {Triplet, useBox} from '@react-three/cannon';
-import {useMemo, useRef} from 'react';
-import {Color} from 'three';
-import * as THREE from 'three';
+import {Triplet} from '@react-three/cannon';
+import {useMemo} from 'react';
 
 import Box from './Box';
 

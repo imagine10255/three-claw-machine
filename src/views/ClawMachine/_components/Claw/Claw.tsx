@@ -1,83 +1,29 @@
 // 爪子组件
-import {useBox} from '@react-three/cannon';
 import {useFrame} from '@react-three/fiber';
-import {ForwardedRef, forwardRef, useEffect,useImperativeHandle, useRef} from 'react';
+import {RapierRigidBody,RigidBody} from '@react-three/rapier';
+import React, {ForwardedRef, forwardRef, useEffect, useImperativeHandle, useRef} from 'react';
 import * as THREE from 'three';
 import {Vector3} from 'three';
 
 import Arm from './Arm';
-import {IArmProps} from './types';
-
-
-
-export interface IClawRefProps{
-    startMoving: (direction: EDirectionState) => void
-    stopMoving: () => void
-}
-
-
-enum EGrabState {
-    idle = 'idle',
-    down = 'down',
-    up = 'up',
-}
-export enum EDirectionState {
-    down = 'down',
-    up = 'up',
-    left = 'left',
-    right = 'right',
-}
+import {EDirectionState, EGrabState, IArmProps, IClawRefProps} from './types';
 
 const initY = 12;
-
 
 /**
  * 爪子
  * @param ref
  */
-const Claw = (
-    {}, ref: ForwardedRef<IClawRefProps>) => {
+const Claw = ({
+
+}, ref: ForwardedRef<IClawRefProps>) => {
+
     const currentDirection = useRef<string | null>(null);
     const grabStateRef = useRef<EGrabState>(EGrabState.idle);
     const isGrabbingRef = useRef(false); // 新增
 
     const clawYRef = useRef(initY);
-
-    useEffect(() => {
-        const unsubscribe = clawApi.position.subscribe(([x, y]) => {
-            clawYRef.current = y;
-        });
-        return unsubscribe;
-    }, []);
-
-
-    const [clawRef, clawApi] = useBox(() => ({
-        mass: 0,
-        args: [1, 1, 1],
-        position: [
-            1,
-            initY,
-            2
-        ],
-        type: 'Dynamic',
-        userData: {
-            tag: 'Claw'
-        },
-        allowSleep: false,
-        // collisionResponse: true,
-        onCollide: (e) => {
-            // console.log('Claw collided', e.target);
-            const tag = (e.body as any).userData?.tag;
-            if (tag === 'Box' || tag === 'Plane' && grabStateRef.current === EGrabState.down) { // 修改
-                grabStateRef.current = EGrabState.up;
-                isGrabbingRef.current = true; // 修改
-            }
-
-        }
-    }),
-    useRef<THREE.Group>(null),
-    );
-
+    const clawRef = useRef<RapierRigidBody>(null);
 
     const baseY = 10;
     const base2Y = -1;
@@ -129,10 +75,10 @@ const Claw = (
         {position: [0, base2Y, 0], args: [0.5, 0.5, 0.5]},
     ];
 
-
     useFrame((state, delta) => {
         onMove(delta);
         onGrab(delta);
+        // clawYRef.current = clawRef.current?.translation().y;
     });
 
     useImperativeHandle(ref, () => ({
@@ -141,15 +87,12 @@ const Claw = (
     }));
 
     useEffect(() => {
-
         const handleKeyDown = (e: KeyboardEvent) => {
-
             const direction = getDirectionFromKey(e.code);
-            if(direction && [EDirectionState.up, EDirectionState.down, EDirectionState.left, EDirectionState.right].includes(direction)){
+            if (direction && [EDirectionState.up, EDirectionState.down, EDirectionState.left, EDirectionState.right].includes(direction)) {
                 e.preventDefault();
                 startMoving(direction);
-
-            }else if(e.code === 'Space'){
+            } else if (e.code === 'Space') {
                 e.preventDefault();
                 grabStateRef.current = EGrabState.down;
             }
@@ -159,14 +102,12 @@ const Claw = (
             stopMoving();
         };
 
-
         window.addEventListener('keydown', handleKeyDown);
         window.addEventListener('keyup', handleKeyUp);
 
         return () => {
             window.removeEventListener('keydown', handleKeyDown);
             window.removeEventListener('keyup', handleKeyUp);
-
             stopMoving();
         };
 
@@ -181,44 +122,37 @@ const Claw = (
         currentDirection.current = null;
     };
 
-
     /**
      * 抓取
      * @param delta
      */
     const onGrab = (delta: number) => {
-        if(grabStateRef.current === EGrabState.idle) return;
-        if(!clawRef.current) return;
+        if (grabStateRef.current === EGrabState.idle) return;
+        if (!clawRef.current) return;
 
         const baseSpeed = 7;
         const currentY = clawYRef.current;
 
-        if (grabStateRef.current === EGrabState.down) {
-            clawApi.velocity.set(0, -baseSpeed, 0);
-
-        } else if (grabStateRef.current === EGrabState.up) {
-            clawApi.velocity.set(0, baseSpeed, 0);
-
-            if (currentY >= initY) {
-                grabStateRef.current = EGrabState.idle;
-                //     isGrabbingRef.current = false; // 修改
-                // clawApi.velocity.set(0, 0, 0);
-            }
-        }
+        // if (grabStateRef.current === EGrabState.down) {
+        //     clawRef.current?.setLinvel(0, -baseSpeed, 0);
+        // } else if (grabStateRef.current === EGrabState.up) {
+        //     clawRef.current?.setLinvel(0, baseSpeed, 0);
+        //
+        //     if (currentY >= initY) {
+        //         grabStateRef.current = EGrabState.idle;
+        //     }
+        // }
     };
-
 
     /**
      * 移動爪子
      * @param delta
      */
     const onMove = (delta: number) => {
-        if(grabStateRef.current === EGrabState.down) return;
-        if(!clawRef.current) return;
-
+        if (grabStateRef.current === EGrabState.down) return;
+        if (!clawRef.current) return;
 
         const move = new Vector3();
-
         const direction = currentDirection.current;
         if (direction) {
             if (direction === EDirectionState.left) {
@@ -237,17 +171,16 @@ const Claw = (
             if (!move.equals(new Vector3(0, 0, 0))) {
                 const velocityX = move.x * baseSpeed;
                 const velocityZ = move.z * baseSpeed;
-                clawApi.velocity.set(velocityX, 0, velocityZ);
+                clawRef.current?.setLinvel({x: velocityX, y: 0, z: velocityZ}, true);
             } else {
-                clawApi.velocity.set(0, 0, 0);
+                clawRef.current?.setLinvel({x: 0, y: 0, z: 0}, true);
             }
         } else {
-            clawApi.velocity.set(0, 0, 0);
+            clawRef.current?.setLinvel({x: 0, y: 0, z: 0}, true);
         }
     };
 
-
-    const getDirectionFromKey = (key: string): EDirectionState|null => {
+    const getDirectionFromKey = (key: string): EDirectionState | null => {
         switch (key) {
         case 'ArrowUp':
             return EDirectionState.up;
@@ -262,7 +195,6 @@ const Claw = (
         }
     };
 
-
     return (
         <>
             {/* 爪子吊绳 - 总是从顶部垂下 */}
@@ -272,12 +204,22 @@ const Claw = (
             {/*</mesh>*/}
 
             {/* 爪子主体 */}
-            <group
-                // ref={setForwardedRef(ref, baseRef)}
+            <RigidBody
                 ref={clawRef}
-                // args={[undefined, undefined, number]}
-                receiveShadow
-                castShadow
+                type="dynamic"
+                position={[1, initY, 2]}
+                colliders="cuboid"
+                canSleep={false}
+                userData={{tag: 'Claw'}}
+                onCollisionEnter={(e) => {
+                    const tag = e.other;
+                    /* if (tag === 'Box' || tag === 'Plane' && grabStateRef.current === EGrabState.down) {
+                        grabStateRef.current = EGrabState.up;
+                        isGrabbingRef.current = true;
+                    }*/
+                }}
+                // receiveShadow
+                // castShadow
             >
                 {/* 爪子基座 */}
                 {/*<primitive object={baseBody}/>*/}
@@ -306,20 +248,9 @@ const Claw = (
                     />;
                 })}
 
-                {/*{armProps.map((props, i) => {*/}
-                {/*    return <mesh*/}
-                {/*        key={`arm-${i}`}*/}
-                {/*        position={props.position}*/}
-                {/*        // rotation={props.rotation}*/}
-                {/*        castShadow*/}
-                {/*    >*/}
-                {/*        <boxGeometry args={props.args}/>*/}
-                {/*        <meshStandardMaterial color="#999999" metalness={0.5} roughness={0.4}/>*/}
-                {/*    </mesh>;*/}
-                {/*})}*/}
-            </group>
+            </RigidBody>
         </>
     );
 };
 
-export default forwardRef(Claw);
+export default React.forwardRef(Claw);

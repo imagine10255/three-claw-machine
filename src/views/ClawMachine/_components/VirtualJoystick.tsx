@@ -4,7 +4,8 @@ import {useEffect, useRef} from 'react';
 import styled from 'styled-components';
 import {Quaternion, Vector3} from 'three';
 
-import {EDirectionState} from '@/views/ClawMachine/_components/Claw/Claw';
+import {EDirectionState} from '@/views/ClawMachine/_components/Claw';
+
 
 interface IPosition {
     x: number
@@ -56,7 +57,6 @@ const VirtualJoystick = ({
             canmove = true;
             // hostWalk();   //人物行走动画
             // controls.enabled = false;
-            console.log('xxx');
             lastPositionRef.current = {
                 x: data.position.x,
                 y: data.position.y,
@@ -65,7 +65,6 @@ const VirtualJoystick = ({
 
         managerRef.current.on('move', (_: EventData, data: JoystickOutputData) => {
             const forward = new Vector3(0, 0, 0);
-            console.log('222');
 
             const qqq = new Quaternion();
 

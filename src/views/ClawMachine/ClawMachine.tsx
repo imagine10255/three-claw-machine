@@ -211,8 +211,6 @@ const ClawMachine = () => {
                     <Walls />
                     <Claw
                         ref={clawRef}
-                        position={[0, 0, 0]}
-                        isGrabbing={isGrabbing}
                     />
 
                     <Boxes {...{colors, number, size}} />

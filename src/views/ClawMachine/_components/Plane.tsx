@@ -15,7 +15,7 @@ const Plane = () => {
         args,
         type: 'Static',
         userData: {
-            tag: 'plane'
+            tag: 'Plane'
         },
     }));
 

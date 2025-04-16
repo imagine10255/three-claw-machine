@@ -22,26 +22,26 @@ const Boxes = ({
     size
 }: InstancedGeometryProps) => {
     const args: Triplet = [size, size, size];
-    const [ref, {at}] = useBox(
-        () => ({
-            args,
-            mass: 1,
-            position: [
-                (Math.random() - 0.5) * 10,
-                Math.random() * 5 + 2,
-                (Math.random() - 0.5) * 10
-            ],
-            userData: {
-                tag: 'box'
-            },
-            allowSleep: false,
-            collisionResponse: true,
-            material: {
-                friction: 0.3,
-                restitution: 0.3
-            }
-        }),
-        useRef<InstancedMesh>(null),
+    const [ref, {at}] = useBox(() => ({
+        mass: 1,
+        args,
+        position: [
+            (Math.random() - 0.5) * 10,
+            Math.random() * 5 + 2,
+            (Math.random() - 0.5) * 10
+        ],
+        type: 'Dynamic',
+        userData: {
+            tag: 'Box'
+        },
+        allowSleep: false,
+        collisionResponse: true,
+        material: {
+            friction: 0.3,
+            restitution: 0.3
+        }
+    }),
+    useRef<InstancedMesh>(null),
     );
 
 
@@ -60,7 +60,12 @@ const Boxes = ({
 
 
     return (
-        <instancedMesh receiveShadow castShadow ref={ref} args={[undefined, undefined, number]}>
+        <instancedMesh
+            ref={ref}
+            receiveShadow
+            castShadow
+            args={[undefined, undefined, number]}
+        >
             <boxGeometry args={args}>
                 <instancedBufferAttribute attach="attributes-color" args={[colors, 3]} />
             </boxGeometry>

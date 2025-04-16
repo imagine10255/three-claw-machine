@@ -1,12 +1,12 @@
 // 爪子组件
 import {useBox} from '@react-three/cannon';
-import {MeshProps, useFrame} from '@react-three/fiber';
-import {ForwardedRef, forwardRef, useEffect,useImperativeHandle, useRef, useState} from 'react';
+import {useFrame} from '@react-three/fiber';
+import {ForwardedRef, forwardRef, useEffect,useImperativeHandle, useRef} from 'react';
 import * as THREE from 'three';
-import {type InstancedMesh, Vector3} from 'three';
+import {Vector3} from 'three';
 
 import Arm from './Arm';
-import {IArmProps} from "@/views/ClawMachine/_components/Claw/types";
+import {IArmProps} from './types';
 
 // 型別定義
 interface ClawProps {
@@ -41,11 +41,6 @@ const initY = 12;
  * @param ref
  */
 const Claw = ({}, ref: ForwardedRef<IClawRefProps>) => {
-    const baseRef = useRef<THREE.Group>(null);
-    const cableRef = useRef<THREE.Mesh>(null);
-    // const [targetY, setTargetY] = useState(position[1]);
-    // const isGrabbing = false;
-
     const currentDirection = useRef<string | null>(null);
     const grabStateRef = useRef<EGrabState>(EGrabState.idle);
     const isGrabbingRef = useRef(false); // 新增

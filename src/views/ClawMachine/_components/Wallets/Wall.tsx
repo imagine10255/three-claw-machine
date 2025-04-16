@@ -1,5 +1,8 @@
 import {useBox} from '@react-three/cannon';
 import {Mesh} from 'three';
+import { useLoader } from '@react-three/fiber';
+import { TextureLoader } from 'three';
+import * as THREE from 'three';
 
 import {IWallProps} from './types';
 
@@ -28,18 +31,15 @@ const Wall = ({
         },
     }));
 
+    const texture = useLoader(TextureLoader, '/static/images/wall_bg.png');
+
+
     return (
         <mesh ref={ref} receiveShadow>
             <boxGeometry args={args} />
             {isBack ? (
-                // 墙壁壁纸样式
-                <meshStandardMaterial
-                    color={color}
-                    roughness={0.8}
-                    metalness={0.2}
-                />
+                <meshStandardMaterial map={texture} side={THREE.FrontSide} />
             ) : (
-                // 玻璃样式
                 <meshStandardMaterial
                     color="#87CEEB"
                     transparent

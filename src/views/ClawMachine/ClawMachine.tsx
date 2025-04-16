@@ -7,7 +7,7 @@ import {Color} from 'three';
 
 import Boxes from '@/views/ClawMachine/_components/Boxes/Boxes';
 
-import Claw, {IClawRefProps} from './_components/Claw';
+import Claw, {IClawRefProps} from './_components/Claw/Claw';
 import ControlPanel from './_components/ControlPanel';
 import GameInfo from './_components/GameInfo';
 import Planes from './_components/Planes';
@@ -176,6 +176,64 @@ const ClawMachine = () => {
         </div>
     );
 
+
+    /**
+     * 渲染UI
+     */
+    const renderUI = () => {
+        return <UIContainer>
+            <ControlPanel
+                onMove={startMoving}
+                onGrab={handleGrab}
+                isGrabbing={isGrabbing}
+            />
+            <GameInfo
+                dolls={dollPositions.length}
+                caught={caughtDolls}
+            />
+            {renderKeyboardControls()}
+        </UIContainer>;
+
+
+    };
+
+
+    /**
+     * 渲染虛擬鍵盤
+     */
+    const renderJoystick = () => {
+        return <JoystickContainer>
+            <VirtualJoystick
+                onMove={(direction) => {
+                    // startMoving(direction);
+                    if(clawRef.current){
+
+                        clawRef.current.startMoving(direction);
+                        // const speed = .5; // 定义移动速度
+                        // const directionVector = new Vector3(direction.x, direction.y, direction.z).normalize().multiplyScalar(speed); // 归一化方向向量并乘以速度
+                        // clawRef.current.position.add(directionVector); // 更新爪子的位置信息
+
+                        // clawRef.current.copy(new Vector3(direction.x, direction.y, direction.z));
+                    }
+                }}
+                onMoveEnd={() => {
+                    if(clawRef.current){
+
+                        clawRef.current.stopMoving();
+                        // const speed = .5; // 定义移动速度
+                        // const directionVector = new Vector3(direction.x, direction.y, direction.z).normalize().multiplyScalar(speed); // 归一化方向向量并乘以速度
+                        // clawRef.current.position.add(directionVector); // 更新爪子的位置信息
+
+                        // clawRef.current.copy(new Vector3(direction.x, direction.y, direction.z));
+                    }
+                    // stopMoving();
+                }}
+            />
+        </JoystickContainer>;
+    };
+
+
+
     return (
         <GameContainer>
             <Canvas
@@ -224,47 +282,11 @@ const ClawMachine = () => {
                 {/*/>*/}
             </Canvas>
 
-            <UIContainer>
-                <ControlPanel
-                    onMove={startMoving}
-                    onGrab={handleGrab}
-                    isGrabbing={isGrabbing}
-                />
-                <GameInfo
-                    dolls={dollPositions.length}
-                    caught={caughtDolls}
-                />
-                {renderKeyboardControls()}
-            </UIContainer>
 
-            <JoystickContainer>
-                <VirtualJoystick
-                    onMove={(direction) => {
-                        // startMoving(direction);
-                        if(clawRef.current){
+            {renderUI()}
+            {renderJoystick()}
 
-                            clawRef.current.startMoving(direction);
-                            // const speed = .5; // 定义移动速度
-                            // const directionVector = new Vector3(direction.x, direction.y, direction.z).normalize().multiplyScalar(speed); // 归一化方向向量并乘以速度
-                            // clawRef.current.position.add(directionVector); // 更新爪子的位置信息
 
-                            // clawRef.current.copy(new Vector3(direction.x, direction.y, direction.z));
-                        }
-                    }}
-                    onMoveEnd={() => {
-                        if(clawRef.current){
-
-                            clawRef.current.stopMoving();
-                            // const speed = .5; // 定义移动速度
-                            // const directionVector = new Vector3(direction.x, direction.y, direction.z).normalize().multiplyScalar(speed); // 归一化方向向量并乘以速度
-                            // clawRef.current.position.add(directionVector); // 更新爪子的位置信息
-
-                            // clawRef.current.copy(new Vector3(direction.x, direction.y, direction.z));
-                        }
-                        // stopMoving();
-                    }}
-                />
-            </JoystickContainer>
         </GameContainer>
     );
 };

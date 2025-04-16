@@ -5,17 +5,15 @@ import {ForwardedRef, forwardRef, useEffect,useImperativeHandle, useRef, useStat
 import * as THREE from 'three';
 import {type InstancedMesh, Vector3} from 'three';
 
+import Arm from './Arm';
+import {IArmProps} from "@/views/ClawMachine/_components/Claw/types";
+
 // 型別定義
 interface ClawProps {
     position: [number, number, number]
     isGrabbing: boolean
 }
 
-interface ArmProps {
-    position: [number, number, number]
-    args: [number, number, number]
-    rotation: [number, number, number]
-}
 
 export interface IClawRefProps{
     startMoving: (direction: EDirectionState) => void
@@ -93,14 +91,14 @@ const Claw = ({}, ref: ForwardedRef<IClawRefProps>) => {
     const baseY = 10;
     const base2Y = -1;
     const arg1Height = 1.5;
-    const arg2Height = 1;
+    const arg2Height = 2;
     const arm1 = {
         y: arg1Height / -2,
-        args: [.4, arg1Height, .2] as ArmProps['args'],
+        args: [.4, arg1Height, .2] as IArmProps['args'],
     };
     const arm2 = {
         y: (arg1Height * -1) + (arg2Height / -2) * .6,
-        args: [.4, arg2Height, .2] as ArmProps['args'],
+        args: [.4, arg2Height, .2] as IArmProps['args'],
     };
 
     // 爪子线缆 - 调整高度
@@ -108,7 +106,7 @@ const Claw = ({}, ref: ForwardedRef<IClawRefProps>) => {
     const cableThickness = 0.2;
 
     // 爪子手臂 - 更加复杂的结构
-    const armProps: ArmProps[] = grabStateRef.current === EGrabState.down ? [
+    const armProps: IArmProps[] = grabStateRef.current === EGrabState.down ? [
         // 爪子内侧位置 (抓取状态)
         {position: [0.8, arm1.y, 0.8], args: arm1.args, rotation: [0, 0, 0.3]},
         {position: [-0.8, arm1.y, 0.8], args: arm1.args, rotation: [0, 0, -0.3]},
@@ -308,17 +306,26 @@ const Claw = ({}, ref: ForwardedRef<IClawRefProps>) => {
                 {/*))}*/}
 
                 {/* 爪子手臂 */}
-                {armProps.map((props, i) => (
-                    <mesh
+                {armProps.map((props, i) => {
+                    return <Arm
                         key={`arm-${i}`}
                         position={props.position}
+                        args={props.args}
                         rotation={props.rotation}
-                        castShadow
-                    >
-                        <boxGeometry args={props.args}/>
-                        <meshStandardMaterial color="#999999" metalness={0.5} roughness={0.4}/>
-                    </mesh>
-                ))}
+                    />;
+                })}
+
+                {/*{armProps.map((props, i) => {*/}
+                {/*    return <mesh*/}
+                {/*        key={`arm-${i}`}*/}
+                {/*        position={props.position}*/}
+                {/*        // rotation={props.rotation}*/}
+                {/*        castShadow*/}
+                {/*    >*/}
+                {/*        <boxGeometry args={props.args}/>*/}
+                {/*        <meshStandardMaterial color="#999999" metalness={0.5} roughness={0.4}/>*/}
+                {/*    </mesh>;*/}
+                {/*})}*/}
             </group>
         </>
     );

@@ -4,7 +4,7 @@ import {useEffect, useRef} from 'react';
 import styled from 'styled-components';
 import {Quaternion, Vector3} from 'three';
 
-import {EDirectionState} from '@/views/ClawMachine/_components/Claw';
+import {EDirectionState} from '@/views/ClawMachine/_components/Claw/Claw';
 
 interface IPosition {
     x: number
@@ -73,7 +73,6 @@ const VirtualJoystick = ({
             // forward.applyQuaternion(qqq);
             // forward.normalize();
             // forward.multiplyScalar(movedistance * 0.01 * delta);
-            console.log('data.direction?.x', data.direction);
             onMove(data.direction?.angle as EDirectionState);
             // moveIntervalRef.current = data;
             /*if (data.direction) {

@@ -9,12 +9,16 @@ import {
     useSphericalJoint
 } from '@react-three/rapier';
 import {MeshLineGeometry, MeshLineMaterial} from 'meshline';
-import {RefObject, useRef, useState} from 'react';
+import {RefObject, useEffect, useRef, useState} from 'react';
 import * as THREE from 'three';
+import {Vector3} from 'three';
+
+import {EDirectionState, EGrabState} from '@/views/ClawMachine/_components/Claw/types';
 
 extend({MeshLineGeometry, MeshLineMaterial});
 
 const Band = () => {
+    const currentDirection = useRef<string | null>(null);
     const band = useRef<THREE.Mesh>(null);
     const fixed = useRef<RapierRigidBody>(null);
     const j1 = useRef<RapierRigidBody>(null);
@@ -25,6 +29,44 @@ const Band = () => {
     const {width, height} = useThree((state) => state.size);
     const [curve] = useState(() => new THREE.CatmullRomCurve3([new THREE.Vector3(), new THREE.Vector3(), new THREE.Vector3(), new THREE.Vector3()]));
     const [dragged, drag] = useState<{x: number, y: number, z: number}| false>(false);
+
+    useEffect(() => {
+        const handleKeyDown = (e: KeyboardEvent) => {
+            const direction = getDirectionFromKey(e.code);
+            if (direction && [EDirectionState.up, EDirectionState.down, EDirectionState.left, EDirectionState.right].includes(direction)) {
+                e.preventDefault();
+                startMoving(direction);
+            } else if (e.code === 'Space') {
+                e.preventDefault();
+                // grabStateRef.current = EGrabState.down;
+            }
+        };
+
+        const handleKeyUp = (e: KeyboardEvent) => {
+            stopMoving();
+        };
+
+        window.addEventListener('keydown', handleKeyDown);
+        window.addEventListener('keyup', handleKeyUp);
+
+        return () => {
+            window.removeEventListener('keydown', handleKeyDown);
+            window.removeEventListener('keyup', handleKeyUp);
+            stopMoving();
+        };
+
+    }, []);
+
+
+    const startMoving = (direction: EDirectionState) => {
+        if (!direction) return;
+        currentDirection.current = direction;
+    };
+
+    const stopMoving = () => {
+        currentDirection.current = null;
+    };
+
 
     useRopeJoint(
         fixed as RefObject<RapierRigidBody>,
@@ -48,6 +90,10 @@ const Band = () => {
     ); // prettier-ignore
 
     useFrame((state, delta) => {
+        onMove(delta);
+    });
+
+    useFrame((state, delta) => {
         if (dragged) {
             vec.set(state.pointer.x, state.pointer.y, 0.5).unproject(state.camera);
             dir.copy(vec).sub(state.camera.position).normalize();
@@ -66,6 +112,7 @@ const Band = () => {
             band.current &&
             card.current
         ) {
+
             // Calculate catmul curve
             curve.points[0].copy(j3.current.translation());
             curve.points[1].copy(j2.current.translation());
@@ -79,10 +126,63 @@ const Band = () => {
         }
     });
 
+
+
+    /**
+     * 移動爪子
+     * @param delta
+     */
+    const onMove = (delta: number) => {
+        // if (grabStateRef.current === EGrabState.down) return;
+        if (!currentDirection.current || !fixed.current) return;
+
+        const speed = 5;
+        const currentPos = fixed.current.translation();
+        let newX = currentPos.x;
+        let newZ = currentPos.z;
+
+        switch (currentDirection.current) {
+        case EDirectionState.left:
+            newX = Math.max(-5, currentPos.x - speed * delta);
+            break;
+        case EDirectionState.right:
+            newX = Math.min(5, currentPos.x + speed * delta);
+            break;
+        case EDirectionState.up:
+            newZ = Math.max(-5, currentPos.z - speed * delta);
+            break;
+        case EDirectionState.down:
+            newZ = Math.min(5, currentPos.z + speed * delta);
+            break;
+        }
+
+        fixed.current.setNextKinematicTranslation({
+            x: newX,
+            y: currentPos.y,
+            z: newZ
+        });
+    };
+
+    const getDirectionFromKey = (key: string): EDirectionState | null => {
+        switch (key) {
+        case 'ArrowUp':
+            return EDirectionState.up;
+        case 'ArrowDown':
+            return EDirectionState.down;
+        case 'ArrowLeft':
+            return EDirectionState.left;
+        case 'ArrowRight':
+            return EDirectionState.right;
+        default:
+            return null;
+        }
+    };
+
+
     return (
         <>
             <group position={[0, 12, 0]}>
-                <RigidBody ref={fixed} angularDamping={2} linearDamping={2} type="fixed"/>
+                <RigidBody ref={fixed} angularDamping={2} linearDamping={2} type="kinematicPosition"/>
                 <RigidBody position={[0.5, 0, 0]} ref={j1} angularDamping={2} linearDamping={2}>
                     <BallCollider args={[0.1]}/>
                 </RigidBody>

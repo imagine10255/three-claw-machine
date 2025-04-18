@@ -1,4 +1,4 @@
-import type {GroupProps} from '@react-three/fiber';
+import type {ThreeElements} from '@react-three/fiber';
 import {useMemo} from 'react';
 import {TextGeometry} from 'three/examples/jsm/geometries/TextGeometry';
 import {FontData,FontLoader} from 'three/examples/jsm/loaders/FontLoader';
@@ -11,12 +11,16 @@ const geom = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9'].map(
     (number) => new TextGeometry(number, {font, height: 0.1, size: 5}),
 );
 
-type TextProps = GroupProps & {
+type ITextProps = ThreeElements['group'] & {
     color?: string,
     count: string,
 }
 
-export default function Text({color = 'white', count, ...props}: TextProps): JSX.Element {
+export const Text = ({
+    color = 'white',
+    count,
+    ...props
+}: ITextProps) => {
     const array = useMemo(() => [...count], [count]);
     return (
         <group {...props} dispose={null}>
@@ -31,4 +35,6 @@ export default function Text({color = 'white', count, ...props}: TextProps): JSX
             ))}
         </group>
     );
-}
+};
+
+export default Text;

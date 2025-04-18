@@ -25,7 +25,6 @@ const VirtualJoystick = ({
 }: Props) => {
     const joystickRef = useRef<HTMLDivElement>(null);
     const managerRef = useRef<JoystickManager | null>(null);
-    const moveIntervalRef = useRef<JoystickOutputData>();
 
     let canmove = false;
     const lastPositionRef = useRef({x: 0, y: 0});

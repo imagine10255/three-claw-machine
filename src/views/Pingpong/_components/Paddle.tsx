@@ -13,7 +13,9 @@ import Text from '../Text';
  * Paddle 球拍
  */
 const Paddle = () => {
-    const {nodes, materials} = useGLTF('/static/glb/pingpong.glb', '/static/glb/draco-gltf/') as PingPongGLTF;
+    const {nodes, materials} = useGLTF('/static/glb/pingpong.glb', '/static/glb/draco-gltf/');
+
+    const asNodes = nodes as PingPongGLTF['nodes'];
     const {pong} = useStore((state) => state.api);
     const welcome = useStore((state) => state.welcome);
     const count = useStore((state) => state.count);
@@ -51,16 +53,16 @@ const Paddle = () => {
                         receiveShadow
                         material={materials.glove}
                         material-roughness={1}
-                        geometry={nodes.arm.geometry}
-                        skeleton={nodes.arm.skeleton}
+                        geometry={asNodes.arm.geometry}
+                        skeleton={asNodes.arm.skeleton}
                     />
                 </group>
                 <group rotation={[0, -0.04, 0]} scale={[141.94, 141.94, 141.94]}>
-                    <mesh castShadow receiveShadow material={materials.wood} geometry={nodes.mesh.geometry} />
-                    <mesh castShadow receiveShadow material={materials.side} geometry={nodes.mesh_1.geometry} />
-                    <mesh castShadow receiveShadow material={materials.foam} geometry={nodes.mesh_2.geometry} />
-                    <mesh castShadow receiveShadow material={materials.lower} geometry={nodes.mesh_3.geometry} />
-                    <mesh castShadow receiveShadow material={materials.upper} geometry={nodes.mesh_4.geometry} />
+                    <mesh castShadow receiveShadow material={materials.wood} geometry={asNodes.mesh.geometry} />
+                    <mesh castShadow receiveShadow material={materials.side} geometry={asNodes.mesh_1.geometry} />
+                    <mesh castShadow receiveShadow material={materials.foam} geometry={asNodes.mesh_2.geometry} />
+                    <mesh castShadow receiveShadow material={materials.lower} geometry={asNodes.mesh_3.geometry} />
+                    <mesh castShadow receiveShadow material={materials.upper} geometry={asNodes.mesh_4.geometry} />
                 </group>
             </group>
         </mesh>

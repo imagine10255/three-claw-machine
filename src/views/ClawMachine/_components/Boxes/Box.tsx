@@ -1,6 +1,6 @@
-import { RigidBody } from '@react-three/rapier';
+import {RigidBody} from '@react-three/rapier';
 import * as THREE from 'three';
-import { Color } from 'three';
+import {Color} from 'three';
 
 interface IProps {
     size: number

@@ -3,8 +3,8 @@ import {useRef} from 'react';
 import * as THREE from 'three';
 
 interface Props {
-    length: number;
-    position: [number, number, number];
+    length: number
+    position: [number, number, number]
 }
 
 const Cable = ({length, position}: Props) => {
@@ -13,8 +13,8 @@ const Cable = ({length, position}: Props) => {
     return (
         <mesh ref={cableRef} position={position}>
             <cylinderGeometry args={[0.05, 0.05, length, 16]} />
-            <meshStandardMaterial 
-                color="#888888" 
+            <meshStandardMaterial
+                color="#888888"
                 metalness={0.3}
                 roughness={0.7}
             />
@@ -22,4 +22,4 @@ const Cable = ({length, position}: Props) => {
     );
 };
 
-export default Cable; 
+export default Cable;

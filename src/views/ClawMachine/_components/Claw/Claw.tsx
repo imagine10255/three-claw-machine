@@ -18,7 +18,7 @@ const maxCableLength = 20; // 最大绳子长度
  */
 const Claw = ({
 
-              }, ref: ForwardedRef<IClawRefProps>) => {
+}, ref: ForwardedRef<IClawRefProps>) => {
 
     const currentDirection = useRef<string | null>(null);
     const grabStateRef = useRef<EGrabState>(EGrabState.idle);
@@ -165,50 +165,53 @@ const Claw = ({
      */
     const onMove = (delta: number) => {
         if (grabStateRef.current === EGrabState.down) return;
-        console.log('clawRef', clawRef);
-
         if (!clawRef.current) return;
 
-        const move = new Vector3();
         const direction = currentDirection.current;
-        if (direction) {
-            if (direction === EDirectionState.left) {
-                move.x = -1;
-            } else if (direction === EDirectionState.right) {
-                move.x = 1;
-            } else if (direction === EDirectionState.up) {
-                move.z = -1;
-            } else if (direction === EDirectionState.down) {
-                move.z = 1;
-            }
-
-            move.normalize();
-            const baseSpeed = 5;
-
-            if (!move.equals(new Vector3(0, 0, 0))) {
-                const velocityX = move.x * baseSpeed;
-                const velocityZ = move.z * baseSpeed;
-                clawRef.current?.setLinvel({x: velocityX, y: 0, z: velocityZ}, true);
-            } else {
-                clawRef.current?.setLinvel({x: 0, y: 0, z: 0}, true);
-            }
-        } else {
-            clawRef.current?.setLinvel({x: 0, y: 0, z: 0}, true);
-        }
+        // if (direction) {
+        //     const force = new Vector3();
+        //     if (direction === EDirectionState.left) {
+        //         force.x = -1;
+        //     } else if (direction === EDirectionState.right) {
+        //         force.x = 1;
+        //     } else if (direction === EDirectionState.up) {
+        //         force.z = -1;
+        //     } else if (direction === EDirectionState.down) {
+        //         force.z = 1;
+        //     }
+        //
+        //     force.normalize();
+        //     const baseForce = 5;
+        //     force.multiplyScalar(baseForce);
+        //
+        //     // 使用applyImpulse而不是setLinvel
+        //     clawRef.current?.applyImpulse(force, true);
+        // } else {
+        //     // 当没有方向时，施加一个小的反向力来减速
+        //     const currentVelocity = clawRef.current?.linvel();
+        //     if (currentVelocity) {
+        //         const dampingForce = new Vector3(
+        //             -currentVelocity.x * 0.1,
+        //             0,
+        //             -currentVelocity.z * 0.1
+        //         );
+        //         clawRef.current?.applyImpulse(dampingForce, true);
+        //     }
+        // }
     };
 
     const getDirectionFromKey = (key: string): EDirectionState | null => {
         switch (key) {
-            case 'ArrowUp':
-                return EDirectionState.up;
-            case 'ArrowDown':
-                return EDirectionState.down;
-            case 'ArrowLeft':
-                return EDirectionState.left;
-            case 'ArrowRight':
-                return EDirectionState.right;
-            default:
-                return null;
+        case 'ArrowUp':
+            return EDirectionState.up;
+        case 'ArrowDown':
+            return EDirectionState.down;
+        case 'ArrowLeft':
+            return EDirectionState.left;
+        case 'ArrowRight':
+            return EDirectionState.right;
+        default:
+            return null;
         }
     };
 

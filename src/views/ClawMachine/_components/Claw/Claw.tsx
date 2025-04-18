@@ -139,23 +139,31 @@ const Claw = ({
 
         if (grabStateRef.current === EGrabState.down) {
             // 放绳子
-            setCableLength(prev => {
-                const newLength = prev + baseSpeed * delta;
-                return Math.min(newLength, maxCableLength);
-            });
-            clawRef.current?.setLinvel({x: 0, y: 0, z: 0}, true);
+            // setCableLength(prev => {
+            //     const newLength = prev + baseSpeed * delta;
+            //     return Math.min(newLength, maxCableLength);
+            // });
+            // 向下施加力
+            const force = new Vector3(0, -1, 0);
+            force.normalize();
+            force.multiplyScalar(baseSpeed);
+            clawRef.current?.applyImpulse(force, true);
 
         } else if (grabStateRef.current === EGrabState.up) {
             // 收绳子
-            setCableLength(prev => {
-                const newLength = prev - baseSpeed * delta;
-                if (newLength <= 0) {
-                    grabStateRef.current = EGrabState.idle;
-                    return 0;
-                }
-                return newLength;
-            });
-            clawRef.current?.setLinvel({x: 0, y: 0, z: 0}, true);
+            // setCableLength(prev => {
+            //     const newLength = prev - baseSpeed * delta;
+            //     if (newLength <= 0) {
+            //         grabStateRef.current = EGrabState.idle;
+            //         return 0;
+            //     }
+            //     return newLength;
+            // });
+            // 向上施加力
+            const force = new Vector3(0, 1, 0);
+            force.normalize();
+            force.multiplyScalar(baseSpeed);
+            clawRef.current?.applyImpulse(force, true);
         }
     };
 

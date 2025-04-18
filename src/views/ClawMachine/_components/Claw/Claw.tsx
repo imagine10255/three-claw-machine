@@ -12,13 +12,18 @@ import {EDirectionState, EGrabState, IArmProps, IClawRefProps} from './types';
 const initY = 11;
 const maxCableLength = 20; // 最大绳子长度
 
+
+interface IProps {
+    ref: ForwardedRef<IClawRefProps>
+}
+
 /**
  * 爪子
  * @param ref
  */
 const Claw = ({
-
-}, ref: ForwardedRef<IClawRefProps>) => {
+    ref
+}: IProps) => {
 
     const currentDirection = useRef<string | null>(null);
     const grabStateRef = useRef<EGrabState>(EGrabState.idle);
@@ -253,4 +258,4 @@ const Claw = ({
     );
 };
 
-export default React.forwardRef(Claw);
+export default Claw;

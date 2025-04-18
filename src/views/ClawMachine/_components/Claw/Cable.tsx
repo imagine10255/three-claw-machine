@@ -7,7 +7,9 @@ interface Props {
     position: [number, number, number]
 }
 
-const Cable = ({length, position}: Props) => {
+const Cable = ({
+    length, position
+}: Props) => {
     const cableRef = useRef<THREE.Mesh>(null);
 
     return (

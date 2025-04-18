@@ -131,7 +131,11 @@ const ClawMachine = () => {
 
 
 
-                <Physics>
+                <Physics
+                    // gravity={[0, -9.81, 0]}
+                    // timeStep={1/60}
+                    // debug
+                >
                     <Planes />
                     <Walls />
                     <Claw

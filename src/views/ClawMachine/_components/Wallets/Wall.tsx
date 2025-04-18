@@ -24,7 +24,7 @@ const Wall = ({
         <RigidBody
             type="fixed"
             position={position}
-            userData={{tag: 'wall'}}
+            userData={{tag: 'Wall'}}
         >
             <mesh receiveShadow>
                 <boxGeometry args={args} />

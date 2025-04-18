@@ -16,6 +16,9 @@ const Plane = ({
             type="fixed"
             position={position}
             userData={{tag: 'Plane'}}
+            colliders="cuboid"
+            friction={0.3}
+            restitution={0.3}
         >
             <mesh receiveShadow>
                 <boxGeometry args={args} />

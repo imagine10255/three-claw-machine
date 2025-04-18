@@ -16,7 +16,7 @@ import Walls from './_components/Wallets/Walls';
 const niceColors = ['#99b898', '#fecea8', '#ff847c', '#e84a5f', '#2a363b'];
 
 
-const boxNumber: number = 101;
+const boxNumber: number = 2;
 const boxSize: number = 1.5;
 
 // 主遊戲組件

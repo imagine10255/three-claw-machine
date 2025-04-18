@@ -1,37 +1,29 @@
 // 爪子组件
 import {useFrame} from '@react-three/fiber';
 import {RapierRigidBody,RigidBody} from '@react-three/rapier';
-import React, {ForwardedRef, forwardRef, useEffect, useImperativeHandle, useRef, useState} from 'react';
+import React, {ForwardedRef, forwardRef, useEffect, useImperativeHandle, useRef} from 'react';
 import * as THREE from 'three';
 import {Vector3} from 'three';
 
 import Arm from './Arm';
-import Cable from './Cable';
 import {EDirectionState, EGrabState, IArmProps, IClawRefProps} from './types';
 
 const initY = 11;
-const maxCableLength = 20; // 最大绳子长度
-
-
-interface IProps {
-    ref: ForwardedRef<IClawRefProps>
-}
 
 /**
  * 爪子
  * @param ref
  */
 const Claw = ({
-    ref
-}: IProps) => {
+
+}, ref: ForwardedRef<IClawRefProps>) => {
 
     const currentDirection = useRef<string | null>(null);
     const grabStateRef = useRef<EGrabState>(EGrabState.idle);
     const isGrabbingRef = useRef(false); // 新增
-    const [cableLength, setCableLength] = useState(0);
-    const clawPosition = useRef<[number, number, number]>([1, initY, 2]);
 
     const clawYRef = useRef(initY);
+    const cableRef = useRef<RapierRigidBody>(null);
     const clawRef = useRef<RapierRigidBody>(null);
 
     const baseY = 10;
@@ -141,26 +133,17 @@ const Claw = ({
         if (!clawRef.current) return;
 
         const baseSpeed = 7;
+        const currentY = clawYRef.current;
 
         if (grabStateRef.current === EGrabState.down) {
-            // 放绳子
-            setCableLength(prev => {
-                const newLength = prev + baseSpeed * delta;
-                return Math.min(newLength, maxCableLength);
-            });
-            clawRef.current?.setLinvel({x: 0, y: 0, z: 0}, true);
+            clawRef.current?.setLinvel({x: 0, y: -baseSpeed, z: 0}, true);
 
         } else if (grabStateRef.current === EGrabState.up) {
-            // 收绳子
-            setCableLength(prev => {
-                const newLength = prev - baseSpeed * delta;
-                if (newLength <= 0) {
-                    grabStateRef.current = EGrabState.idle;
-                    return 0;
-                }
-                return newLength;
-            });
-            clawRef.current?.setLinvel({x: 0, y: 0, z: 0}, true);
+            clawRef.current?.setLinvel({x: 0, y: baseSpeed, z: 0}, true);
+
+            if (currentY >= initY) {
+                grabStateRef.current = EGrabState.idle;
+            }
         }
     };
 
@@ -170,7 +153,6 @@ const Claw = ({
      */
     const onMove = (delta: number) => {
         if (grabStateRef.current === EGrabState.down) return;
-        console.log('clawRef', clawRef);
 
         if (!clawRef.current) return;
 
@@ -219,30 +201,47 @@ const Claw = ({
 
     return (
         <>
-            {/* 固定在天花板上的绳子 */}
-            <Cable
-                length={cableLength}
-                position={[clawPosition.current[0], initY - cableLength/2, clawPosition.current[2]]}
-            />
+            {/* 爪子吊绳 - 总是从顶部垂下 */}
+            {/*<mesh ref={cableRef} castShadow>*/}
+            {/*    <cylinderGeometry args={[cableThickness, cableThickness, cableHeight, 12]}/>*/}
+            {/*    <meshStandardMaterial color="#666666"/>*/}
+            {/*</mesh>*/}
 
             {/* 爪子主体 */}
             <RigidBody
                 ref={clawRef}
                 type="dynamic"
-                position={[clawPosition.current[0], initY - cableLength, clawPosition.current[2]]}
+                position={[1, initY, 2]}
                 colliders="cuboid"
                 canSleep={false}
                 userData={{tag: 'Claw'}}
-                gravityScale={0} // 移除重力影响
-                linearDamping={0.5} // 添加线性阻尼
-                angularDamping={0.5} // 添加角阻尼
-                lockRotations // 锁定旋转
+                onCollisionEnter={(e) => {
+                    const tag = e.other;
+                    // console.log('tag', tag);
+                    /* if (tag === 'Box' || tag === 'Plane' && grabStateRef.current === EGrabState.down) {
+                        grabStateRef.current = EGrabState.up;
+                        isGrabbingRef.current = true;
+                    }*/
+                }}
+                // receiveShadow
+                // castShadow
             >
                 {/* 爪子基座 */}
-                <mesh position={[0, 0, 0]}>
+                {/*<primitive object={baseBody}/>*/}
+                <mesh
+                    // position={[0, baseY, 0]} castShadow
+                >
                     <boxGeometry args={[2.8, 0.5, 2.8]}/>
                     <meshStandardMaterial color="#555555" metalness={0.8} roughness={0.2}/>
                 </mesh>
+
+                {/* 爪子连接部分 */}
+                {/*{connectorProps.map((props, i) => (*/}
+                {/*    <mesh key={`connector-${i}`} position={props.position} castShadow>*/}
+                {/*        <cylinderGeometry args={[...props.args]}/>*/}
+                {/*        <meshStandardMaterial color="#777777" metalness={0.6} roughness={0.3}/>*/}
+                {/*    </mesh>*/}
+                {/*))}*/}
 
                 {/* 爪子手臂 */}
                 {armProps.map((props, i) => {
@@ -253,9 +252,10 @@ const Claw = ({
                         rotation={props.rotation}
                     />;
                 })}
+
             </RigidBody>
         </>
     );
 };
 
-export default Claw;
+export default React.forwardRef(Claw);

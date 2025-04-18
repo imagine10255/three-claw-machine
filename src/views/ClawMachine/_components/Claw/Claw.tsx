@@ -232,12 +232,7 @@ const Claw = ({
                 canSleep={false}
                 userData={{tag: 'Claw'}}
                 lockRotations // 锁定旋转
-                // lockTranslations // 锁定所有方向的移动
-
-
-                // friction={0.3}
-                // restitution={0.3}
-                // mass={1}
+                gravityScale={0} // 设置重力缩放为0，这样就不会受重力影响
             >
                 {/* 爪子基座 */}
                 <mesh position={[0, 0, 0]}>

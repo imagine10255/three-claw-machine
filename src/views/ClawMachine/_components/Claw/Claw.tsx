@@ -135,14 +135,9 @@ const Claw = ({
         if (grabStateRef.current === EGrabState.idle) return;
         if (!clawRef.current) return;
 
-        const baseSpeed = 7;
+        const baseSpeed = 2; // 降低垂直移动速度
 
         if (grabStateRef.current === EGrabState.down) {
-            // 放绳子
-            // setCableLength(prev => {
-            //     const newLength = prev + baseSpeed * delta;
-            //     return Math.min(newLength, maxCableLength);
-            // });
             // 向下施加力
             const force = new Vector3(0, -1, 0);
             force.normalize();
@@ -150,15 +145,6 @@ const Claw = ({
             clawRef.current?.applyImpulse(force, true);
 
         } else if (grabStateRef.current === EGrabState.up) {
-            // 收绳子
-            // setCableLength(prev => {
-            //     const newLength = prev - baseSpeed * delta;
-            //     if (newLength <= 0) {
-            //         grabStateRef.current = EGrabState.idle;
-            //         return 0;
-            //     }
-            //     return newLength;
-            // });
             // 向上施加力
             const force = new Vector3(0, 1, 0);
             force.normalize();
@@ -189,7 +175,7 @@ const Claw = ({
             }
 
             force.normalize();
-            const baseForce = 5;
+            const baseForce = 2; // 降低水平移动速度
             force.multiplyScalar(baseForce);
 
             // 使用applyImpulse而不是setLinvel

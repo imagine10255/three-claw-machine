@@ -12,16 +12,25 @@ import {EDirectionState, EGrabState, IArmProps, IClawRefProps} from './types';
 const initY = 11;
 const maxCableLength = 20; // 最大绳子长度
 
+
+interface IProps {
+    ref: ForwardedRef<IClawRefProps>
+}
+
+
+
 /**
  * 爪子
  * @param ref
  */
 const Claw = ({
-
-}, ref: ForwardedRef<IClawRefProps>) => {
+    ref
+}: IProps) => {
 
     const currentDirection = useRef<string | null>(null);
     const grabStateRef = useRef<EGrabState>(EGrabState.idle);
+    const cableRef = useRef<THREE.Mesh>(null);
+
     const isGrabbingRef = useRef(false); // 新增
     const [cableLength, setCableLength] = useState(0);
     const clawPosition = useRef<[number, number, number]>([1, initY, 2]);
@@ -213,6 +222,7 @@ const Claw = ({
         <>
             {/* 固定在天花板上的绳子 */}
             <Cable
+                ref={cableRef}
                 length={cableLength}
                 position={[clawPosition.current[0], initY - cableLength/2, clawPosition.current[2]]}
             />
@@ -250,4 +260,4 @@ const Claw = ({
     );
 };
 
-export default React.forwardRef(Claw);
+export default Claw;

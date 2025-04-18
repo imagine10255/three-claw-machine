@@ -8,12 +8,12 @@ const color = '#c2cd4b';
  */
 const Planes = () => {
     const ceiling: IPlaneProps[] = [
-        {
-            // 底版長塊
-            position: [0, 12, 0],
-            args: [20, .2, 20],
-            color,
-        },
+        // {
+        //     // 底版長塊
+        //     position: [0, 12, 0],
+        //     args: [20, .2, 20],
+        //     color,
+        // },
     ];
     const planProps: IPlaneProps[] = [
         {

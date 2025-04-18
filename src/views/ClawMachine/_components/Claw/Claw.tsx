@@ -228,8 +228,10 @@ const Claw = ({
                 colliders="cuboid"
                 canSleep={false}
                 userData={{tag: 'Claw'}}
-                lockRotations={true} // 锁定旋转
-                lockTranslations={true} // 锁定所有方向的移动
+                gravityScale={0} // 移除重力影响
+                linearDamping={0.5} // 添加线性阻尼
+                angularDamping={0.5} // 添加角阻尼
+                lockRotations // 锁定旋转
             >
                 {/* 爪子基座 */}
                 <mesh position={[0, 0, 0]}>

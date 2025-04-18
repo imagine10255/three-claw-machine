@@ -168,36 +168,36 @@ const Claw = ({
         if (!clawRef.current) return;
 
         const direction = currentDirection.current;
-        // if (direction) {
-        //     const force = new Vector3();
-        //     if (direction === EDirectionState.left) {
-        //         force.x = -1;
-        //     } else if (direction === EDirectionState.right) {
-        //         force.x = 1;
-        //     } else if (direction === EDirectionState.up) {
-        //         force.z = -1;
-        //     } else if (direction === EDirectionState.down) {
-        //         force.z = 1;
-        //     }
-        //
-        //     force.normalize();
-        //     const baseForce = 5;
-        //     force.multiplyScalar(baseForce);
-        //
-        //     // 使用applyImpulse而不是setLinvel
-        //     clawRef.current?.applyImpulse(force, true);
-        // } else {
-        //     // 当没有方向时，施加一个小的反向力来减速
-        //     const currentVelocity = clawRef.current?.linvel();
-        //     if (currentVelocity) {
-        //         const dampingForce = new Vector3(
-        //             -currentVelocity.x * 0.1,
-        //             0,
-        //             -currentVelocity.z * 0.1
-        //         );
-        //         clawRef.current?.applyImpulse(dampingForce, true);
-        //     }
-        // }
+        if (direction) {
+            const force = new Vector3();
+            if (direction === EDirectionState.left) {
+                force.x = -1;
+            } else if (direction === EDirectionState.right) {
+                force.x = 1;
+            } else if (direction === EDirectionState.up) {
+                force.z = -1;
+            } else if (direction === EDirectionState.down) {
+                force.z = 1;
+            }
+
+            force.normalize();
+            const baseForce = 5;
+            force.multiplyScalar(baseForce);
+
+            // 使用applyImpulse而不是setLinvel
+            clawRef.current?.applyImpulse(force, true);
+        } else {
+            // 当没有方向时，施加一个小的反向力来减速
+            const currentVelocity = clawRef.current?.linvel();
+            if (currentVelocity) {
+                const dampingForce = new Vector3(
+                    -currentVelocity.x * 0.1,
+                    0,
+                    -currentVelocity.z * 0.1
+                );
+                clawRef.current?.applyImpulse(dampingForce, true);
+            }
+        }
     };
 
     const getDirectionFromKey = (key: string): EDirectionState | null => {
@@ -232,9 +232,12 @@ const Claw = ({
                 canSleep={false}
                 userData={{tag: 'Claw'}}
                 lockRotations // 锁定旋转
-                friction={0.3}
-                restitution={0.3}
-                mass={1}
+                // lockTranslations // 锁定所有方向的移动
+
+
+                // friction={0.3}
+                // restitution={0.3}
+                // mass={1}
             >
                 {/* 爪子基座 */}
                 <mesh position={[0, 0, 0]}>

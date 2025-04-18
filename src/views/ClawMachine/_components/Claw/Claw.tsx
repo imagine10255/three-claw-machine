@@ -227,6 +227,8 @@ const Claw = ({
                 userData={{tag: 'Claw'}}
                 lockRotations // 锁定旋转
                 gravityScale={0} // 设置重力缩放为0，这样就不会受重力影响
+                friction={5.5} // 增加摩擦力
+                linearDamping={5.5} // 增加线性阻尼
             >
                 {/* 爪子基座 */}
                 <mesh position={[0, 0, 0]}>

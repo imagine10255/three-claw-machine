@@ -81,7 +81,7 @@ const Band = () => {
 
     return (
         <>
-            <group position={[0, 4, 0]}>
+            <group position={[0, 12, 0]}>
                 <RigidBody ref={fixed} angularDamping={2} linearDamping={2} type="fixed"/>
                 <RigidBody position={[0.5, 0, 0]} ref={j1} angularDamping={2} linearDamping={2}>
                     <BallCollider args={[0.1]}/>

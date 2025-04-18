@@ -122,13 +122,13 @@ const ClawMachine = () => {
                     shadow-mapSize-width={1024}
                     shadow-mapSize-height={1024}
                 />
-                {/*<OrbitControls*/}
-                {/*    makeDefault*/}
-                {/*    // onChange={(e) => {*/}
-                {/*    //     const cam = e?.target.object;*/}
-                {/*    //     console.log('Camera moved to:', cam?.position.toArray());*/}
-                {/*    // }}*/}
-                {/*/>*/}
+                <OrbitControls
+                    makeDefault
+                    // onChange={(e) => {
+                    //     const cam = e?.target.object;
+                    //     console.log('Camera moved to:', cam?.position.toArray());
+                    // }}
+                />
 
 
 

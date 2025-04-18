@@ -16,12 +16,13 @@ const Cable = ({
 }: IProps) => {
 
     return (
-        <mesh ref={ref} position={position}>
-            <cylinderGeometry args={[0.05, 0.05, length, 16]} />
+        <mesh ref={ref} >
+            <cylinderGeometry args={[0.1, 0.1, length, 16]} />
             <meshStandardMaterial
                 color="#888888"
                 metalness={0.3}
                 roughness={0.7}
+                side={THREE.DoubleSide}
             />
         </mesh>
     );

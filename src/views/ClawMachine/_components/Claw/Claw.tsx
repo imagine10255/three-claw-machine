@@ -52,7 +52,7 @@ const Claw = ({
     };
 
     // 爪子线缆 - 调整高度
-    const cableHeight = 25; // 固定高度，确保线缆总是从机器顶部垂下
+    const cableHeight = 2; // 固定高度，确保线缆总是从机器顶部垂下
     const cableThickness = 0.2;
 
     // 爪子手臂 - 更加复杂的结构
@@ -219,13 +219,9 @@ const Claw = ({
     };
 
     return (
-        <>
+        <group>
             {/* 固定在天花板上的绳子 */}
-            <Cable
-                ref={cableRef}
-                length={cableLength}
-                position={[clawPosition.current[0], initY - cableLength/2, clawPosition.current[2]]}
-            />
+
 
             {/* 爪子主体 */}
             <RigidBody
@@ -240,8 +236,14 @@ const Claw = ({
                 friction={5.5} // 增加摩擦力
                 linearDamping={5.5} // 增加线性阻尼
             >
+                <Cable
+                    ref={cableRef}
+                    length={cableHeight}
+                    position={[clawPosition.current[0], initY + cableHeight/2, clawPosition.current[2]]}
+                />
+
                 {/* 爪子基座 */}
-                <mesh position={[0, 0, 0]}>
+                <mesh position={[0, -1, 0]}>
                     <boxGeometry args={[2.8, 0.5, 2.8]}/>
                     <meshStandardMaterial color="#555555" metalness={0.8} roughness={0.2}/>
                 </mesh>
@@ -256,7 +258,7 @@ const Claw = ({
                     />;
                 })}
             </RigidBody>
-        </>
+        </group>
     );
 };
 

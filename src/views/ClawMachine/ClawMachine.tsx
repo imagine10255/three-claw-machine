@@ -1,7 +1,7 @@
 import {OrbitControls} from '@react-three/drei';
 import {Canvas} from '@react-three/fiber';
 import {Physics} from '@react-three/rapier';
-import {useMemo, useRef, useState} from 'react';
+import {useEffect, useMemo, useRef, useState} from 'react';
 import styled from 'styled-components';
 import {Color} from 'three';
 
@@ -21,15 +21,19 @@ const boxSize: number = 1.5;
 
 // 主遊戲組件
 const ClawMachine = () => {
-
+    const [isPhysicsReady, setIsPhysicsReady] = useState(false);
     const [isGrabbing, setIsGrabbing] = useState<boolean>(false);
     const [caughtDolls, setCaughtDolls] = useState<number>(0);
     const clawRef = useRef<IClawRefProps>(null);
     const currentDirection = useRef<string | null>(null);
     const currentForce = useRef<number>(1);
 
-
-
+    useEffect(() => {
+        const timer = setTimeout(() => {
+            setIsPhysicsReady(true);
+        }, 2000); // 等待2秒让物理引擎初始化
+        return () => clearTimeout(timer);
+    }, []);
 
     const colors = useMemo(() => {
         const array = new Float32Array(boxNumber * 3);
@@ -42,20 +46,17 @@ const ClawMachine = () => {
         return array;
     }, [boxNumber]);
 
-
     const startMoving = (direction: string, force: number = 1) => {
-        if (!direction) return;
+        if (!direction || !isPhysicsReady) return;
         currentDirection.current = direction;
         currentForce.current = force;
     };
 
-
     const handleGrab = () => {
-        if (clawRef.current) {
+        if (clawRef.current && isPhysicsReady) {
             // clawRef.current.grab();
         }
     };
-
 
     /**
      * 渲染UI
@@ -73,12 +74,10 @@ const ClawMachine = () => {
             />
             <div className="keyboard-controls">
                 <p>键盘控制: 方向键/WASD移动, 空格键抓取</p>
+                {!isPhysicsReady && <p style={{color: 'red'}}>正在初始化物理引擎...</p>}
             </div>
         </UIContainer>;
-
-
     };
-
 
     /**
      * 渲染虛擬鍵盤
@@ -87,20 +86,18 @@ const ClawMachine = () => {
         return <JoystickContainer>
             <VirtualJoystick
                 onMove={(direction) => {
-                    if(clawRef.current){
+                    if(clawRef.current && isPhysicsReady){
                         clawRef.current.startMoving(direction);
                     }
                 }}
                 onMoveEnd={() => {
-                    if(clawRef.current){
+                    if(clawRef.current && isPhysicsReady){
                         clawRef.current.stopMoving();
                     }
                 }}
             />
         </JoystickContainer>;
     };
-
-
 
     return (
         <GameContainer>

@@ -8,6 +8,7 @@ import {Color} from 'three';
 import Boxes from '@/views/ClawMachine/_components/Boxes/Boxes';
 
 import Claw, {IClawRefProps} from './_components/Claw';
+import Band from './_components/Claw/Band';
 import ControlPanel from './_components/ControlPanel';
 import GameInfo from './_components/GameInfo';
 import Planes from './_components/Planes';
@@ -121,13 +122,13 @@ const ClawMachine = () => {
                     shadow-mapSize-width={1024}
                     shadow-mapSize-height={1024}
                 />
-                <OrbitControls
-                    makeDefault
-                    // onChange={(e) => {
-                    //     const cam = e?.target.object;
-                    //     console.log('Camera moved to:', cam?.position.toArray());
-                    // }}
-                />
+                {/*<OrbitControls*/}
+                {/*    makeDefault*/}
+                {/*    // onChange={(e) => {*/}
+                {/*    //     const cam = e?.target.object;*/}
+                {/*    //     console.log('Camera moved to:', cam?.position.toArray());*/}
+                {/*    // }}*/}
+                {/*/>*/}
 
 
 
@@ -140,9 +141,10 @@ const ClawMachine = () => {
                 >
                     <Planes />
                     <Walls />
-                    <Claw
-                        ref={clawRef}
-                    />
+                    {/*<Claw*/}
+                    {/*    ref={clawRef}*/}
+                    {/*/>*/}
+                    <Band/>
 
                     <Boxes {...{colors, number: boxNumber, size: boxSize}} />
                 </Physics>

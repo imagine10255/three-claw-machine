@@ -1,7 +1,7 @@
 // 爪子组件
 import {useFrame} from '@react-three/fiber';
-import {RapierRigidBody,RigidBody} from '@react-three/rapier';
-import React, {ForwardedRef, forwardRef, useEffect, useImperativeHandle, useRef, useState} from 'react';
+import {RapierRigidBody,RigidBody, useFixedJoint} from '@react-three/rapier';
+import React, {ForwardedRef, forwardRef, RefObject, useEffect, useImperativeHandle, useRef, useState} from 'react';
 import * as THREE from 'three';
 import {Vector3} from 'three';
 
@@ -29,13 +29,13 @@ const Claw = ({
 
     const currentDirection = useRef<string | null>(null);
     const grabStateRef = useRef<EGrabState>(EGrabState.idle);
-    const cableRef = useRef<THREE.Mesh>(null);
 
     const isGrabbingRef = useRef(false); // 新增
     const [cableLength, setCableLength] = useState(0);
     const clawPosition = useRef<[number, number, number]>([1, initY, 2]);
 
     const clawYRef = useRef(initY);
+    const cableRef = useRef<RapierRigidBody>(null);
     const clawRef = useRef<RapierRigidBody>(null);
 
     const baseY = 10;
@@ -52,7 +52,7 @@ const Claw = ({
     };
 
     // 爪子线缆 - 调整高度
-    const cableHeight = 2; // 固定高度，确保线缆总是从机器顶部垂下
+    const cableHeight = 25; // 固定高度，确保线缆总是从机器顶部垂下
     const cableThickness = 0.2;
 
     // 爪子手臂 - 更加复杂的结构
@@ -94,6 +94,21 @@ const Claw = ({
 
         // clawYRef.current = clawRef.current?.translation().y;
     });
+
+    // useFixedJoint(
+    //     cableRef as RefObject<RapierRigidBody>,
+    //     clawRef as RefObject<RapierRigidBody>,
+    //     [
+    //         // Position of the joint in bodyA's local space
+    //         [0, 0, 0],
+    //         // Orientation of the joint in bodyA's local space
+    //         [0, 0, 0, 1],
+    //         // Position of the joint in bodyB's local space
+    //         [0, 0, 0],
+    //         // Orientation of the joint in bodyB's local space
+    //         [0, 0, 0, 1]
+    //     ]
+    // );
 
     useImperativeHandle(ref, () => ({
         startMoving,

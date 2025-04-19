@@ -7,7 +7,7 @@ import {Vector3} from 'three';
 
 import Arm from './Arm';
 import Cable from './Cable';
-import {EDirectionState, EGrabState, IArmProps, IClawRefProps} from './types';
+import {EDirectionState, EGrabState, IArm4Props, IArmProps, IClawRefProps, TPosition, TRotation} from './types';
 
 const initY = 11;
 const maxCableLength = 20; // 最大绳子长度
@@ -53,36 +53,22 @@ const Claws = ({
 
     const arm1 = {
         y: arg1Height / -2,
-        args: [.4, arg1Height, .2] as IArmProps['args'],
+        args: [.4, arg1Height, .2],
     };
     const arm2 = {
         y: (arg1Height * -1) + (arg2Height / -2) * .6,
-        args: [.4, arg2Height, .2] as IArmProps['args'],
+        args: [.4, arg2Height, .2],
     };
 
     // 爪子手臂 - 围绕中心点旋转
-    const armProps: IArmProps[] = [
-        {
-            position: [centerPoint[0] + clawRadius, centerPoint[1], centerPoint[2]],
-            args: arm1.args,
-            rotation: [0, 0, 0]
-        },
-        {
-            position: [
-                centerPoint[0] - clawRadius * Math.cos(Math.PI/3), centerPoint[1], centerPoint[2] + clawRadius * Math.sin(Math.PI/3)
-            ],
-            args: arm1.args,
-            rotation: [0, 2.2, 0]
-        },
-        {
-            position: [
-                centerPoint[0] - clawRadius * Math.cos(Math.PI/3), centerPoint[1], centerPoint[2] + clawRadius * Math.sin(Math.PI/3)
-            ],
-            args: arm1.args,
-            rotation: [0, 4.4, 0]
-        },
-
-
+    const armRotations: TRotation[] = [
+        // [0, 0, 0],
+        // [0, 2.2, 0],
+        // [0, 4.4, 0]
+        // 爪
+        [0, 0, 0],
+        [0, 2.2, 0],
+        [0, 4.4, 0]
     ];
 
     // 爪子连接部分
@@ -130,7 +116,6 @@ const Claws = ({
                 // position={armProps[0].position}
                 position={[0,0,0]}
                 // rotation={[0,0,0]}
-                rotation={armProps[0].rotation}
                 castShadow
                 receiveShadow
             >
@@ -142,7 +127,6 @@ const Claws = ({
                 // position={armProps[0].position}
                 position={[0,-.5,0]}
                 // rotation={[0,0,0]}
-                rotation={armProps[0].rotation}
                 castShadow
                 receiveShadow
             >
@@ -152,11 +136,11 @@ const Claws = ({
 
 
             {/* 爪子手臂 */}
-            {armProps.map((props, i) => {
+            {armRotations.map((rotation, i) => {
                 return <Arm
                     key={`arm-${i}`}
                     position={[0,-1.0,0]}
-                    rotation={props.rotation}
+                    rotation={rotation}
                 />;
             })}
         </RigidBody>

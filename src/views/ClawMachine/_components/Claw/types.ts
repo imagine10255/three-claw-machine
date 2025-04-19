@@ -1,3 +1,4 @@
+import {EulerOrder} from "three/src/math/Euler";
 
 export interface IArmProps {
     position: [number, number, number]
@@ -5,8 +6,8 @@ export interface IArmProps {
     args: [number, number, number]
 }
 export interface IArm3Props {
-    position?: [number, number, number]
-    rotation?: [number, number, number]
+    position?: TPosition
+    rotation?: TRotation
 }
 
 export interface IArm2Props {
@@ -15,6 +16,12 @@ export interface IArm2Props {
     rotation: [number, number, number]
 }
 
+export interface IArm4Props {
+    rotation: [number, number, number]
+}
+
+export type TPosition = [x: number, y: number, z: number];
+export type TRotation = [x: number, y: number, z: number, order?: EulerOrder];
 
 export interface IClawRefProps {
     startMoving: (direction: EDirectionState) => void

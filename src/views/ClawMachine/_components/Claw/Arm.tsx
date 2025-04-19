@@ -32,14 +32,12 @@ const Arm = ({
 
     const armProps: IArm2Props[] = [
         {
-            key: '1',
-            position: [1, 1, 1],
+            position: [0, 0, 0],
             args: arm1.args,
             rotation: [-0.6, 0, 0]
         },
         {
-            key: '2',
-            position: [1, -.4, 1],
+            position: [0, -1.4, 0],
             args: arm2.args,
             rotation: [.5, 0, 0]
         }
@@ -58,37 +56,32 @@ const Arm = ({
     //     );
     // }, []);
 
-    return <group>
-        <RigidBody
-            ref={ref1}
-            type="kinematicPosition"
-            position={position}
-            rotation={rotation}
-            angularDamping={2}
-            linearDamping={2}
-            // type={dragged ? 'kinematicPosition' : 'dynamic'}
+    return <group
+        position={position}
+        // rotation={[0,1,0]}
+        rotation={rotation}
+    >
+        <mesh
+            // position={armProps[0].position}
+            position={[0,0,.8]}
+            // rotation={[0,0,0]}
+            rotation={armProps[0].rotation}
+            castShadow
+            receiveShadow
         >
-            <mesh
-                key={armProps[0].key}
-                position={armProps[0].position}
-                rotation={armProps[0].rotation}
-                castShadow
-                receiveShadow
-            >
-                <boxGeometry args={armProps[0].args} />
-                <meshStandardMaterial color="#999999" />
-            </mesh>
+            <boxGeometry args={armProps[0].args} />
+            <meshStandardMaterial color="#999999" />
+        </mesh>
 
-            <mesh
-                position={armProps[1].position}
-                rotation={armProps[1].rotation}
-                castShadow
-                receiveShadow
-            >
-                <boxGeometry args={armProps[1].args} />
-                <meshStandardMaterial color="red" />
-            </mesh>
-        </RigidBody>
+        <mesh
+            position={[0,-1.4,.8]}
+            rotation={armProps[1].rotation}
+            castShadow
+            receiveShadow
+        >
+            <boxGeometry args={armProps[1].args} />
+            <meshStandardMaterial color="red" />
+        </mesh>
 
     </group>;
 };

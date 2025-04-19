@@ -43,6 +43,12 @@ const Claws = ({
     const base2Y = -1;
     const arg1Height = 1.5;
     const arg2Height = 2;
+
+    // 定义中心点
+    const centerPoint = [0, 0, 0];
+    // 定义爪子到中心点的距离
+    const clawRadius = 1.2;
+
     const arm1 = {
         y: arg1Height / -2,
         args: [.4, arg1Height, .2] as IArmProps['args'],
@@ -52,18 +58,29 @@ const Claws = ({
         args: [.4, arg2Height, .2] as IArmProps['args'],
     };
 
-    // 爪子手臂 - 更加复杂的结构
-    const armProps: IArmProps[] = grabStateRef.current === EGrabState.down ? [
-        // 爪子内侧位置 (抓取状态)
-        {position: [0.8, arm1.y, 0.8], args: arm1.args, rotation: [0, 0, 0.3]},
-        {position: [-0.8, arm1.y, 0.8], args: arm1.args, rotation: [0, 0, -0.3]},
-        {position: [0.8, arm1.y, -0.8], args: arm1.args, rotation: [0, 0, 0.3]},
+    // 爪子手臂 - 围绕中心点旋转
+    const armProps: IArmProps[] = [
+        {
+            position: [centerPoint[0] + clawRadius, centerPoint[1], centerPoint[2]],
+            args: arm1.args,
+            rotation: [0, 0, 0]
+        },
+        {
+            position: [
+                centerPoint[0] - clawRadius * Math.cos(Math.PI/3), centerPoint[1], centerPoint[2] + clawRadius * Math.sin(Math.PI/3)
+            ],
+            args: arm1.args,
+            rotation: [0, 2.2, 0]
+        },
+        {
+            position: [
+                centerPoint[0] - clawRadius * Math.cos(Math.PI/3), centerPoint[1], centerPoint[2] + clawRadius * Math.sin(Math.PI/3)
+            ],
+            args: arm1.args,
+            rotation: [0, 4.4, 0]
+        },
 
-    ] : [
-        // 爪子外侧位置 (非抓取状态)
-        {position: [0, 0, 0], args: arm1.args, rotation: [0, 1, 0]},
-        {position: [0, 0, 0], args: arm1.args, rotation: [0, 0, 0]},
-        {position: [0, 0, 0], args: arm1.args, rotation: [0,0, 0]},
+
     ];
 
     // 爪子连接部分
@@ -78,6 +95,7 @@ const Claws = ({
     // }));
 
     return (
+
         <RigidBody
             ref={clawRef}
             type="dynamic"
@@ -95,11 +113,38 @@ const Claws = ({
             {/*    // position={props.position}*/}
             {/*    // rotation={props.rotation}*/}
             {/*/>*/}
+
+
+            <mesh
+                // position={armProps[0].position}
+                position={[0,0,0]}
+                // rotation={[0,0,0]}
+                rotation={armProps[0].rotation}
+                castShadow
+                receiveShadow
+            >
+                <cylinderGeometry args={[0.4, 0.4, 1, 32]} />
+                <meshStandardMaterial color="blue" />
+            </mesh>
+
+            <mesh
+                // position={armProps[0].position}
+                position={[0,-.8,0]}
+                // rotation={[0,0,0]}
+                rotation={armProps[0].rotation}
+                castShadow
+                receiveShadow
+            >
+                <cylinderGeometry args={[0.8, 0.4, .6, 32]} />
+                <meshStandardMaterial color="blue" />
+            </mesh>
+
+
             {/* 爪子手臂 */}
             {armProps.map((props, i) => {
                 return <Arm
                     key={`arm-${i}`}
-                    position={props.position}
+                    position={[0,-1.5,0]}
                     rotation={props.rotation}
                 />;
             })}

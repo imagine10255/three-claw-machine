@@ -306,6 +306,8 @@ const Band = () => {
                 <meshLineMaterial transparent opacity={0.25} color="white" depthTest={false}
                     resolution={[width, height]} lineWidth={1}/>
             </mesh>
+
+            
             <Claw/>
         </>
     );

@@ -10,7 +10,6 @@ export interface IArm3Props {
 }
 
 export interface IArm2Props {
-    key: string
     position: [number, number, number]
     args: [number, number, number]
     rotation: [number, number, number]

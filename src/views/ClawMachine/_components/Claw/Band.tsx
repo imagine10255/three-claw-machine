@@ -36,6 +36,9 @@ const Band = () => {
     const grabStateRef = useRef<EGrabState>(EGrabState.idle);
     const moveRef = useRef<THREE.Mesh>(null);
     const {removeJoint, createImpulseJoint, createMultipleJoints} = useMyRopeJoint();
+    const [ropeLength, setRopeLength] = useState(1);
+    const targetRopeLength = useRef(1);
+    const ropeSpeed = 0.5; // 控制绳子伸缩速度
 
     const joint = useRef<ImpulseJoint>(null);
 
@@ -83,8 +86,6 @@ const Band = () => {
 
 
     useEffect(() => {
-
-
         const handleKeyDown = (e: KeyboardEvent) => {
             const direction = getDirectionFromKey(e.code);
             if (direction && [EDirectionState.up, EDirectionState.down, EDirectionState.left, EDirectionState.right].includes(direction)) {
@@ -94,20 +95,11 @@ const Band = () => {
                 e.preventDefault();
                 if(grabStateRef.current === EGrabState.idle){
                     grabStateRef.current = EGrabState.down;
-                    removeJoint(joint);
-                    joint.current = createImpulseJoint('repo', [
-                        {ref: fixed, anchor: [0,0,0]},
-                        {ref: j1, anchor: [0,0,0]},
-                    ], 7);
+                    targetRopeLength.current = 7; // 设置目标长度为7
                 }else if(grabStateRef.current === EGrabState.down){
                     grabStateRef.current = EGrabState.idle;
-                    removeJoint(joint);
-                    joint.current = createImpulseJoint('repo', [
-                        {ref: fixed, anchor: [0,0,0]},
-                        {ref: j1, anchor: [0,0,0]},
-                    ], 1);
+                    targetRopeLength.current = 1; // 设置目标长度为1
                 }
-
             }
         };
 
@@ -139,6 +131,25 @@ const Band = () => {
     // useFrame((state, delta) => onGrab(delta));
 
     useFrame((state, delta) => {
+        // 平滑地改变绳子长度
+        if (Math.abs(ropeLength - targetRopeLength.current) > 0.01) {
+            const newLength = THREE.MathUtils.lerp(
+                ropeLength,
+                targetRopeLength.current,
+                delta * ropeSpeed
+            );
+            setRopeLength(newLength);
+            
+            // 更新joint
+            if (joint.current) {
+                removeJoint(joint);
+            }
+            joint.current = createImpulseJoint('repo', [
+                {ref: fixed, anchor: [0,0,0]},
+                {ref: j1, anchor: [0,0,0]},
+            ], newLength);
+        }
+
         if (dragged) {
             vec.set(state.pointer.x, state.pointer.y, 0.5).unproject(state.camera);
             dir.copy(vec).sub(state.camera.position).normalize();

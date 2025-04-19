@@ -1,4 +1,4 @@
-import {Vector} from '@dimforge/rapier3d-compat/math';
+import {ImpulseJoint} from '@dimforge/rapier3d-compat';
 import {RapierRigidBody, useRapier} from '@react-three/rapier';
 import {RefObject} from 'react';
 
@@ -7,6 +7,7 @@ interface IParam {
     ref: RefObject<RapierRigidBody|null>
     anchor: [x: number, y: number, z: number]
 }
+
 
 export const useMyRopeJoint = () => {
     const {world, rapier} = useRapier();
@@ -17,6 +18,7 @@ export const useMyRopeJoint = () => {
      * @param length
      * @param params
      * @param type
+     * @param wakeUp
      */
     const createImpulseJoint = (
         type: 'repo'|'spherical',
@@ -31,7 +33,9 @@ export const useMyRopeJoint = () => {
         if(
             !param1.ref.current ||
             !param2.ref.current
-        ) return;
+        ) {
+            return null;
+        }
 
         const anchorA = new rapier.Vector3(param1.anchor[0], param1.anchor[1], param1.anchor[2]);
         const anchorB = new rapier.Vector3(param2.anchor[0], param2.anchor[1], param2.anchor[2]);
@@ -43,18 +47,15 @@ export const useMyRopeJoint = () => {
                 anchorA,  // anchor1
                 anchorB   // anchor2
             );
-            world.createImpulseJoint(jointRepo, param1.ref.current, param2.ref.current, true);
-
-            break;
-
+            return world.createImpulseJoint(jointRepo, param1.ref.current, param2.ref.current, true) as any as ImpulseJoint;
         case 'spherical':
             const jointSpherical = rapier.JointData.spherical(
                 anchorA,  // anchor1
                 anchorB   // anchor2
             );
-            world.createImpulseJoint(jointSpherical, param1.ref.current, param2.ref.current, true);
-            break;
+            return world.createImpulseJoint(jointSpherical, param1.ref.current, param2.ref.current, true) as any as ImpulseJoint;
         }
+        return null;
 
     };
 
@@ -72,9 +73,23 @@ export const useMyRopeJoint = () => {
         });
     };
 
+
+    /**
+     * 移除結點
+     * @param joint
+     */
+    const removeJoint = (joint: RefObject<ImpulseJoint|null>) => {
+        if(!joint.current) return;
+        console.log('joint.current', joint.current);
+        world.removeImpulseJoint(joint.current as any, true);
+    };
+
+
+
     return {
         createImpulseJoint,
         createMultipleJoints,
+        removeJoint,
     };
 
 };

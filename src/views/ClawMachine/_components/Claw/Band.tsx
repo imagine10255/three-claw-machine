@@ -1,4 +1,4 @@
-import Rapier from '@dimforge/rapier3d-compat';
+import Rapier, {ImpulseJoint} from '@dimforge/rapier3d-compat';
 import {Canvas, extend, RootState, useFrame, useThree} from '@react-three/fiber';
 import {
     BallCollider,
@@ -24,6 +24,7 @@ const Band = () => {
     const currentDirection = useRef<string | null>(null);
     const band = useRef<THREE.Mesh>(null);
     const fixed = useRef<RapierRigidBody>(null);
+    const j0 = useRef<RapierRigidBody>(null);
     const j1 = useRef<RapierRigidBody>(null);
     const j2 = useRef<RapierRigidBody>(null);
     const j3 = useRef<RapierRigidBody>(null);
@@ -34,20 +35,25 @@ const Band = () => {
     const [dragged, drag] = useState<{x: number, y: number, z: number}| false>(false);
     const grabStateRef = useRef<EGrabState>(EGrabState.idle);
     const moveRef = useRef<THREE.Mesh>(null);
-    const {createMultipleJoints} = useMyRopeJoint();
+    const {removeJoint, createImpulseJoint, createMultipleJoints} = useMyRopeJoint();
 
+    const joint = useRef<ImpulseJoint>(null);
 
     useEffect(() => {
+        joint.current = createImpulseJoint('repo', [
+            {ref: fixed, anchor: [0,0,0]},
+            {ref: j1, anchor: [0,0,0]},
+        ]);
         createMultipleJoints([
-            {
-                type: 'repo',
-                length: 1,
-                params:
-                    [
-                        {ref: fixed, anchor: [0,0,0]},
-                        {ref: j1, anchor: [0,0,0]},
-                    ],
-            },
+            // {
+            //     type: 'repo',
+            //     length: 1,
+            //     params:
+            //         [
+            //             {ref: fixed, anchor: [0,0,0]},
+            //             {ref: j1, anchor: [0,0,0]},
+            //         ],
+            // },
             {
                 type: 'repo',
                 length: 1,
@@ -73,39 +79,8 @@ const Band = () => {
             },
         ]);
 
-        // createImpulseJoint(1,
-        //     {ref: fixed, anchor: [0,0,0]},
-        //     {ref: j1, anchor: [0,0,0]},
-        // );
-
-
     }, []);
 
-
-    // 直接使用 useRopeJoint
-    // const repoJoint = useRopeJoint(
-    //     fixed as RefObject<RapierRigidBody>,
-    //     j1 as RefObject<RapierRigidBody>,
-    //     [[0, 0, 0], [0, 0, 0], repoLength]
-    // );
-
-    // const joint1 = useRopeJoint(
-    //     j1 as RefObject<RapierRigidBody>,
-    //     j2 as RefObject<RapierRigidBody>,
-    //     [[0, 0, 0], [0, 0, 0], repoLength]
-    // );
-    //
-    // const joint2 = useRopeJoint(
-    //     j2 as RefObject<RapierRigidBody>,
-    //     j3 as RefObject<RapierRigidBody>,
-    //     [[0, 0, 0], [0, 0, 0], repoLength]
-    // );
-
-    // useSphericalJoint(
-    //     j3 as RefObject<RapierRigidBody>,
-    //     card as RefObject<RapierRigidBody>,
-    //     [[0, 0, 0], [0, 1.45, 0]]
-    // ); // prettier-ignore
 
     useEffect(() => {
 
@@ -117,7 +92,22 @@ const Band = () => {
                 startMoving(direction);
             } else if (e.code === 'Space') {
                 e.preventDefault();
-                grabStateRef.current = EGrabState.down;
+                if(grabStateRef.current === EGrabState.idle){
+                    grabStateRef.current = EGrabState.down;
+                    removeJoint(joint);
+                    joint.current = createImpulseJoint('repo', [
+                        {ref: fixed, anchor: [0,0,0]},
+                        {ref: j1, anchor: [0,0,0]},
+                    ], 7);
+                }else if(grabStateRef.current === EGrabState.down){
+                    grabStateRef.current = EGrabState.idle;
+                    removeJoint(joint);
+                    joint.current = createImpulseJoint('repo', [
+                        {ref: fixed, anchor: [0,0,0]},
+                        {ref: j1, anchor: [0,0,0]},
+                    ], 1);
+                }
+
             }
         };
 
@@ -146,7 +136,7 @@ const Band = () => {
 
 
     useFrame((state, delta) => onMove(delta));
-    useFrame((state, delta) => onGrab(delta));
+    // useFrame((state, delta) => onGrab(delta));
 
     useFrame((state, delta) => {
         if (dragged) {
@@ -256,7 +246,11 @@ const Band = () => {
     return (
         <>
             <group position={[0, 12, 0]}>
-                <RigidBody ref={fixed} angularDamping={2} linearDamping={2} type="kinematicPosition"/>
+                <RigidBody ref={fixed}
+                    angularDamping={2}
+                    linearDamping={2}
+                    type="kinematicPosition"
+                />
                 <RigidBody position={[0.5, 0, 0]}
                     args={[.1, 1, .1]}
                     ref={j1}
@@ -265,6 +259,7 @@ const Band = () => {
                 >
                     <BallCollider args={[0.1]}/>
                 </RigidBody>
+
                 <RigidBody position={[1, 0, 0]} ref={j2} angularDamping={2} linearDamping={2}>
                     <BallCollider args={[0.1]}/>
                 </RigidBody>

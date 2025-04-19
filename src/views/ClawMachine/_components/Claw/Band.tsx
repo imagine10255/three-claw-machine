@@ -29,7 +29,6 @@ const Band = () => {
     const j0 = useRef<RapierRigidBody>(null);
     const j1 = useRef<RapierRigidBody>(null);
     const j2 = useRef<RapierRigidBody>(null);
-    const j3 = useRef<RapierRigidBody>(null);
     const card = useRef<RapierRigidBody>(null); // prettier-ignore
     const vec = new THREE.Vector3(), ang = new THREE.Vector3(), rot = new THREE.Vector3(), dir = new THREE.Vector3(); // prettier-ignore
     const {width, height} = useThree((state) => state.size);
@@ -38,8 +37,8 @@ const Band = () => {
     const grabStateRef = useRef<EGrabState>(EGrabState.idle);
     const moveRef = useRef<THREE.Mesh>(null);
     const {removeJoint, createImpulseJoint, createMultipleJoints} = useMyRopeJoint();
-    const ropeLength = useRef(1);
-    const targetRopeLength = useRef(1);
+    const ropeLength = useRef(0.3);
+    const targetRopeLength = useRef(0.3);
     const ropeSpeed = 0.5; // 控制绳子伸缩速度
 
     const joint = useRef<ImpulseJoint>(null);
@@ -50,35 +49,18 @@ const Band = () => {
             {ref: j1, anchor: [0,0,0]},
         ]);
         createMultipleJoints([
-            // {
-            //     type: 'repo',
-            //     length: 1,
-            //     params:
-            //         [
-            //             {ref: fixed, anchor: [0,0,0]},
-            //             {ref: j1, anchor: [0,0,0]},
-            //         ],
-            // },
             {
                 type: 'repo',
-                length: 1,
+                length: ropeLength.current,
                 params: [
                     {ref: j1, anchor: [0,0,0]},
                     {ref: j2, anchor: [0,0,0]},
                 ],
             },
             {
-                type: 'repo',
-                length: 1,
-                params: [
-                    {ref: j2, anchor: [0,0,0]},
-                    {ref: j3, anchor: [0,0,0]},
-                ],
-            },
-            {
                 type: 'spherical',
                 params: [
-                    {ref: j3, anchor: [0,0,0]},
+                    {ref: j2, anchor: [0,0,0]},
                     {ref: card, anchor: [0, 0, 0]},
                 ],
             },
@@ -156,7 +138,7 @@ const Band = () => {
             vec.set(state.pointer.x, state.pointer.y, 0.5).unproject(state.camera);
             dir.copy(vec).sub(state.camera.position).normalize();
             vec.add(dir.multiplyScalar(state.camera.position.length()))
-            ;[card, j1, j2, j3, fixed].forEach((ref) => ref.current?.wakeUp());
+            ;[card, j1, j2, fixed].forEach((ref) => ref.current?.wakeUp());
             card.current?.setNextKinematicTranslation({
                 x: vec.x - dragged.x,
                 y: vec.y - dragged.y,
@@ -164,17 +146,15 @@ const Band = () => {
             });
         }
         if (fixed.current &&
-            j3.current &&
             j2.current &&
             j1.current &&
             band.current &&
             card.current
         ) {
-
             // Calculate catmul curve
-            curve.points[0].copy(j3.current.translation());
-            curve.points[1].copy(j2.current.translation());
-            curve.points[2].copy(j1.current.translation());
+            curve.points[0].copy(j2.current.translation());
+            curve.points[1].copy(j1.current.translation());
+            curve.points[2].copy(fixed.current.translation());
             curve.points[3].copy(fixed.current.translation());
             (band.current.geometry as any).setPoints(curve.getPoints(32));
             // Tilt it back towards the screen
@@ -276,35 +256,10 @@ const Band = () => {
                 <RigidBody position={[1, 0, 0]} ref={j2} angularDamping={2} linearDamping={2}>
                     <BallCollider args={[0.1]}/>
                 </RigidBody>
-                <RigidBody position={[1.5, 0, 0]} ref={j3} angularDamping={2} linearDamping={2}>
-                    <BallCollider args={[0.1]}/>
-                </RigidBody>
-                {/*<RigidBody*/}
-                {/*    position={[2, 0, 0]}*/}
-                {/*    ref={card}*/}
-                {/*    angularDamping={2}*/}
-                {/*    linearDamping={2}*/}
-                {/*    // type={dragged ? 'kinematicPosition' : 'dynamic'}*/}
-                {/*    type="dynamic"*/}
-                {/*>*/}
-                {/*    <CuboidCollider args={[0.8, 1.125, 0.01]}/>*/}
-                {/*    <mesh*/}
-
-                {/*        // onPointerUp={(e: any) => (e.target.releasePointerCapture(e.pointerId), drag(false))}*/}
-                {/*        // onPointerDown={(e: any) => {*/}
-                {/*        //     if(card.current){*/}
-                {/*        //         return e.target.setPointerCapture(e.pointerId), drag(new THREE.Vector3().copy(e.point).sub(vec.copy(card.current.translation())));*/}
-                {/*        //     }*/}
-                {/*        // }}*/}
-                {/*    >*/}
-                {/*        <planeGeometry args={[0.8 * 2, 1.125 * 2]}/>*/}
-                {/*        <meshBasicMaterial transparent opacity={0.25} color="white" side={THREE.DoubleSide}/>*/}
-                {/*    </mesh>*/}
-                {/*</RigidBody>*/}
 
                 <Claw
                     ref={card}
-                    position={[2, 0, 0]}
+                    position={[1.5, 0, 0]}
                 />
 
             </group>

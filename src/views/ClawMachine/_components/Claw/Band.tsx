@@ -36,7 +36,7 @@ const Band = () => {
     const grabStateRef = useRef<EGrabState>(EGrabState.idle);
     const moveRef = useRef<THREE.Mesh>(null);
     const {removeJoint, createImpulseJoint, createMultipleJoints} = useMyRopeJoint();
-    const [ropeLength, setRopeLength] = useState(1);
+    const ropeLength = useRef(1);
     const targetRopeLength = useRef(1);
     const ropeSpeed = 0.5; // 控制绳子伸缩速度
 
@@ -132,14 +132,14 @@ const Band = () => {
 
     useFrame((state, delta) => {
         // 平滑地改变绳子长度
-        if (Math.abs(ropeLength - targetRopeLength.current) > 0.01) {
+        if (Math.abs(ropeLength.current - targetRopeLength.current) > 0.01) {
             const newLength = THREE.MathUtils.lerp(
-                ropeLength,
+                ropeLength.current,
                 targetRopeLength.current,
                 delta * ropeSpeed
             );
-            setRopeLength(newLength);
-            
+            ropeLength.current = newLength;
+
             // 更新joint
             if (joint.current) {
                 removeJoint(joint);

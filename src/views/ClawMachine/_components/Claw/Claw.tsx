@@ -71,16 +71,6 @@ const Claws = ({
         [0, 4.4, 0]
     ];
 
-    // 爪子连接部分
-    const connectorProps: { position: [number, number, number], args: [number, number, number] }[] = [
-        {position: [0, baseY, 0], args: [0.5, 0.5, 0.5]},
-        {position: [0, base2Y, 0], args: [0.5, 0.5, 0.5]},
-    ];
-
-    // useImperativeHandle(ref, () => ({
-    //     startMoving,
-    //     stopMoving,
-    // }));
 
     return (
 
@@ -88,34 +78,11 @@ const Claws = ({
             ref={ref}
             type="dynamic"
             position={position}
-            // colliders="cuboid"
-            // canSleep={false}
-            // userData={{tag: 'Claw'}}
-            // lockRotations // 锁定旋转
-            // gravityScale={0} // 设置重力缩放为0，这样就不会受重力影响
-            // friction={5.5} // 增加摩擦力
-            // linearDamping={5.5} // 增加线性阻尼
-
-
-            // position={[2, 0, 0]}
-            // ref={card}
             angularDamping={2}
             linearDamping={2}
-            // type={dragged ? 'kinematicPosition' : 'dynamic'}
-            // type="dynamic"
-
         >
-
-            {/*<Arm*/}
-            {/*    // position={props.position}*/}
-            {/*    // rotation={props.rotation}*/}
-            {/*/>*/}
-
-
             <mesh
-                // position={armProps[0].position}
                 position={[0,0,0]}
-                // rotation={[0,0,0]}
                 castShadow
                 receiveShadow
             >
@@ -124,9 +91,7 @@ const Claws = ({
             </mesh>
 
             <mesh
-                // position={armProps[0].position}
                 position={[0,-.5,0]}
-                // rotation={[0,0,0]}
                 castShadow
                 receiveShadow
             >

@@ -133,11 +133,10 @@ const ClawMachine = () => {
 
 
                 <Physics
-                    // gravity={[0, -9.81, 0]}
-                    // timeStep={1/60}
-                    // debug
-
-                    debug interpolate gravity={[0, -40, 0]} timeStep={1 / 60}
+                    debug
+                    interpolate
+                    gravity={[0, -40, 0]}
+                    timeStep={1 / 60}
                 >
                     <Planes />
                     <Walls />

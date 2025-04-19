@@ -36,5 +36,7 @@
     "**/tests",
     "**/*.spec.ts"
   ],
-  "references": [{ "path": "./tsconfig.node.json" }]
+    "typeRoots": ["node_modules/ammojs-typed/ammo/ambient"],
+
+    "references": [{ "path": "./tsconfig.node.json" }]
 }

@@ -436,6 +436,11 @@
   resolved "https://registry.yarnpkg.com/@dimforge/rapier3d-compat/-/rapier3d-compat-0.15.0.tgz#53fc00c2655d12baf723ecc9ca9e972e412c2800"
   integrity sha512-TRH9rmF6RJqvKt0xis6VkToJHz4Pf54IfYhKGWn7zkpTWPwVyQ4p9kjwrdm6jOfGn72MBrIbttzvDB/ZOqE7sg==
 
+"@dimforge/rapier3d-compat@^0.15.1":
+  version "0.15.1"
+  resolved "https://registry.yarnpkg.com/@dimforge/rapier3d-compat/-/rapier3d-compat-0.15.1.tgz#bf87279c33100211c51cadaa26364bf872a4667e"
+  integrity sha512-4XVdIGLTK7IeLX5K5AtlUSq39GeGMjVBtn86NH6AmzDzFkM6YbnMYVnxKGL2/nFEwLGs6Zv/ihYOYWd1D1cn5Q==
+
 "@emotion/is-prop-valid@1.2.2":
   version "1.2.2"
   resolved "https://registry.yarnpkg.com/@emotion/is-prop-valid/-/is-prop-valid-1.2.2.tgz#d4175076679c6a26faa92b03bb786f9e52612337"
@@ -2189,6 +2194,16 @@ ajv@^8.11.0, ajv@^8.17.1:
     fast-uri "^3.0.1"
     json-schema-traverse "^1.0.0"
     require-from-string "^2.0.2"
+
+ammo.js@^0.0.10:
+  version "0.0.10"
+  resolved "https://registry.yarnpkg.com/ammo.js/-/ammo.js-0.0.10.tgz#afd16e7186dd3cf784374464f3a4e58f37776950"
+  integrity sha512-jOv977u71jrDUzHfmQ99YaW90/y8YLn/3HFTmtLLzf5wJynAfG+/a1Ie5gbn0fE0uSAHxXVsFk4Bzq8qRPWqAA==
+
+ammojs-typed@^1.0.6:
+  version "1.0.6"
+  resolved "https://registry.yarnpkg.com/ammojs-typed/-/ammojs-typed-1.0.6.tgz#07f951a55885959d0836655587e58dc9218d591e"
+  integrity sha512-ut/tD0m5eEdlJ5KK97ma6SIEGZ4FN3AJTSVz8wl6C4EtnpVQdP70lOwgDMJKsHjTohxc2/xEZl6yJfMBZNlQ5w==
 
 ansi-colors@^4.1.1:
   version "4.1.3"

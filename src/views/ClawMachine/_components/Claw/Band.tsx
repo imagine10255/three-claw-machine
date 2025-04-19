@@ -1,18 +1,21 @@
-import {Canvas, extend, useFrame, useThree} from '@react-three/fiber';
+import Rapier from '@dimforge/rapier3d-compat';
+import {Canvas, extend, RootState, useFrame, useThree} from '@react-three/fiber';
 import {
     BallCollider,
     CuboidCollider,
     Physics,
     RapierRigidBody,
     RigidBody,
+    useRapier,
     useRopeJoint,
-    useSphericalJoint
+    useSphericalJoint,
 } from '@react-three/rapier';
 import {MeshLineGeometry, MeshLineMaterial} from 'meshline';
-import {RefObject, useEffect, useRef, useState} from 'react';
+import {RefObject, useEffect, useMemo,useRef, useState} from 'react';
 import * as THREE from 'three';
 import {Vector3} from 'three';
 
+import {useMyRopeJoint} from '@/views/ClawMachine/_components/Claw/hooks';
 import {EDirectionState, EGrabState} from '@/views/ClawMachine/_components/Claw/types';
 
 extend({MeshLineGeometry, MeshLineMaterial});
@@ -29,8 +32,84 @@ const Band = () => {
     const {width, height} = useThree((state) => state.size);
     const [curve] = useState(() => new THREE.CatmullRomCurve3([new THREE.Vector3(), new THREE.Vector3(), new THREE.Vector3(), new THREE.Vector3()]));
     const [dragged, drag] = useState<{x: number, y: number, z: number}| false>(false);
+    const grabStateRef = useRef<EGrabState>(EGrabState.idle);
+    const moveRef = useRef<THREE.Mesh>(null);
+    const {createMultipleJoints} = useMyRopeJoint();
+
 
     useEffect(() => {
+        createMultipleJoints([
+            {
+                type: 'repo',
+                length: 1,
+                params:
+                    [
+                        {ref: fixed, anchor: [0,0,0]},
+                        {ref: j1, anchor: [0,0,0]},
+                    ],
+            },
+            {
+                type: 'repo',
+                length: 1,
+                params: [
+                    {ref: j1, anchor: [0,0,0]},
+                    {ref: j2, anchor: [0,0,0]},
+                ],
+            },
+            {
+                type: 'repo',
+                length: 1,
+                params: [
+                    {ref: j2, anchor: [0,0,0]},
+                    {ref: j3, anchor: [0,0,0]},
+                ],
+            },
+            {
+                type: 'spherical',
+                params: [
+                    {ref: j3, anchor: [0,0,0]},
+                    {ref: card, anchor: [0, 1.45, 0]},
+                ],
+            },
+        ]);
+
+        // createImpulseJoint(1,
+        //     {ref: fixed, anchor: [0,0,0]},
+        //     {ref: j1, anchor: [0,0,0]},
+        // );
+
+
+    }, []);
+
+
+    // 直接使用 useRopeJoint
+    // const repoJoint = useRopeJoint(
+    //     fixed as RefObject<RapierRigidBody>,
+    //     j1 as RefObject<RapierRigidBody>,
+    //     [[0, 0, 0], [0, 0, 0], repoLength]
+    // );
+
+    // const joint1 = useRopeJoint(
+    //     j1 as RefObject<RapierRigidBody>,
+    //     j2 as RefObject<RapierRigidBody>,
+    //     [[0, 0, 0], [0, 0, 0], repoLength]
+    // );
+    //
+    // const joint2 = useRopeJoint(
+    //     j2 as RefObject<RapierRigidBody>,
+    //     j3 as RefObject<RapierRigidBody>,
+    //     [[0, 0, 0], [0, 0, 0], repoLength]
+    // );
+
+    // useSphericalJoint(
+    //     j3 as RefObject<RapierRigidBody>,
+    //     card as RefObject<RapierRigidBody>,
+    //     [[0, 0, 0], [0, 1.45, 0]]
+    // ); // prettier-ignore
+
+    useEffect(() => {
+
+
         const handleKeyDown = (e: KeyboardEvent) => {
             const direction = getDirectionFromKey(e.code);
             if (direction && [EDirectionState.up, EDirectionState.down, EDirectionState.left, EDirectionState.right].includes(direction)) {
@@ -38,7 +117,7 @@ const Band = () => {
                 startMoving(direction);
             } else if (e.code === 'Space') {
                 e.preventDefault();
-                // grabStateRef.current = EGrabState.down;
+                grabStateRef.current = EGrabState.down;
             }
         };
 
@@ -54,9 +133,7 @@ const Band = () => {
             window.removeEventListener('keyup', handleKeyUp);
             stopMoving();
         };
-
     }, []);
-
 
     const startMoving = (direction: EDirectionState) => {
         if (!direction) return;
@@ -68,30 +145,8 @@ const Band = () => {
     };
 
 
-    useRopeJoint(
-        fixed as RefObject<RapierRigidBody>,
-        j1 as RefObject<RapierRigidBody>,
-        [[0, 0, 0], [0, 0, 0], 1]
-    ); // prettier-ignore
-    useRopeJoint(
-        j1 as RefObject<RapierRigidBody>,
-        j2 as RefObject<RapierRigidBody>,
-        [[0, 0, 0], [0, 0, 0], 1]
-    ); // prettier-ignore
-    useRopeJoint(
-        j2 as RefObject<RapierRigidBody>,
-        j3 as RefObject<RapierRigidBody>,
-        [[0, 0, 0], [0, 0, 0], 1]
-    ); // prettier-ignore
-    useSphericalJoint(
-        j3 as RefObject<RapierRigidBody>,
-        card as RefObject<RapierRigidBody>,
-        [[0, 0, 0], [0, 1.45, 0]]
-    ); // prettier-ignore
-
-    useFrame((state, delta) => {
-        onMove(delta);
-    });
+    useFrame((state, delta) => onMove(delta));
+    useFrame((state, delta) => onGrab(delta));
 
     useFrame((state, delta) => {
         if (dragged) {
@@ -163,6 +218,25 @@ const Band = () => {
         });
     };
 
+
+    /**
+     * 抓取
+     * @param delta
+     */
+    const onGrab = (delta: number) => {
+        if(!moveRef.current) return;
+
+        if (grabStateRef.current === EGrabState.down) {
+            // 当抓取状态为 down 时，逐渐增加长度
+            moveRef.current.scale.y += delta;
+        } else if (grabStateRef.current === EGrabState.up) {
+            // 当抓取状态为 up 时，逐渐减少长度
+            // setRepoLength(prev => Math.max(1, prev - delta * 0.5));
+        }
+    };
+
+
+
     const getDirectionFromKey = (key: string): EDirectionState | null => {
         switch (key) {
         case 'ArrowUp':
@@ -183,7 +257,12 @@ const Band = () => {
         <>
             <group position={[0, 12, 0]}>
                 <RigidBody ref={fixed} angularDamping={2} linearDamping={2} type="kinematicPosition"/>
-                <RigidBody position={[0.5, 0, 0]} ref={j1} angularDamping={2} linearDamping={2}>
+                <RigidBody position={[0.5, 0, 0]}
+                    args={[.1, 1, .1]}
+                    ref={j1}
+                    angularDamping={1}
+                    linearDamping={1}
+                >
                     <BallCollider args={[0.1]}/>
                 </RigidBody>
                 <RigidBody position={[1, 0, 0]} ref={j2} angularDamping={2} linearDamping={2}>
@@ -192,16 +271,24 @@ const Band = () => {
                 <RigidBody position={[1.5, 0, 0]} ref={j3} angularDamping={2} linearDamping={2}>
                     <BallCollider args={[0.1]}/>
                 </RigidBody>
-                <RigidBody position={[2, 0, 0]} ref={card} angularDamping={2} linearDamping={2}
-                    type={dragged ? 'kinematicPosition' : 'dynamic'}>
+                <RigidBody
+                    position={[2, 0, 0]}
+                    ref={card}
+                    angularDamping={2}
+                    linearDamping={2}
+                    // type={dragged ? 'kinematicPosition' : 'dynamic'}
+                    type="dynamic"
+                >
                     <CuboidCollider args={[0.8, 1.125, 0.01]}/>
                     <mesh
-                        onPointerUp={(e: any) => (e.target.releasePointerCapture(e.pointerId), drag(false))}
-                        onPointerDown={(e: any) => {
-                            if(card.current){
-                                return e.target.setPointerCapture(e.pointerId), drag(new THREE.Vector3().copy(e.point).sub(vec.copy(card.current.translation())));
-                            }
-                        }}>
+
+                        // onPointerUp={(e: any) => (e.target.releasePointerCapture(e.pointerId), drag(false))}
+                        // onPointerDown={(e: any) => {
+                        //     if(card.current){
+                        //         return e.target.setPointerCapture(e.pointerId), drag(new THREE.Vector3().copy(e.point).sub(vec.copy(card.current.translation())));
+                        //     }
+                        // }}
+                    >
                         <planeGeometry args={[0.8 * 2, 1.125 * 2]}/>
                         <meshBasicMaterial transparent opacity={0.25} color="white" side={THREE.DoubleSide}/>
                     </mesh>

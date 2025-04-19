@@ -17,6 +17,7 @@ import {Vector3} from 'three';
 
 import {useMyRopeJoint} from '@/views/ClawMachine/_components/Claw/hooks';
 import {EDirectionState, EGrabState} from '@/views/ClawMachine/_components/Claw/types';
+import Claw from './Claw';
 
 extend({MeshLineGeometry, MeshLineMaterial});
 
@@ -95,7 +96,7 @@ const Band = () => {
                 e.preventDefault();
                 if(grabStateRef.current === EGrabState.idle){
                     grabStateRef.current = EGrabState.down;
-                    targetRopeLength.current = 7; // 设置目标长度为7
+                    targetRopeLength.current = 8; // 设置目标长度为7
                 }else if(grabStateRef.current === EGrabState.down){
                     grabStateRef.current = EGrabState.idle;
                     targetRopeLength.current = 1; // 设置目标长度为1
@@ -305,6 +306,7 @@ const Band = () => {
                 <meshLineMaterial transparent opacity={0.25} color="white" depthTest={false}
                     resolution={[width, height]} lineWidth={1}/>
             </mesh>
+            <Claw/>
         </>
     );
 };

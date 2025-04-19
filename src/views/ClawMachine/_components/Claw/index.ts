@@ -1,2 +1,2 @@
-export {default} from './Claw';
+export {default} from './MyClaw';
 export * from './types';

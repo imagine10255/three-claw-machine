@@ -1,6 +1,17 @@
 
 export interface IArmProps {
     position: [number, number, number]
+    rotation: [number, number, number]
+    args: [number, number, number]
+}
+export interface IArm3Props {
+    position?: [number, number, number]
+    rotation?: [number, number, number]
+}
+
+export interface IArm2Props {
+    key: string
+    position: [number, number, number]
     args: [number, number, number]
     rotation: [number, number, number]
 }

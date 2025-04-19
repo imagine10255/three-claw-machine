@@ -1,6 +1,9 @@
-import {RigidBody} from '@react-three/rapier';
+import {RapierRigidBody, RigidBody} from '@react-three/rapier';
+import {useEffect, useRef} from 'react';
 
-import {IArmProps} from './types';
+import {useMyRopeJoint} from '@/views/ClawMachine/_components/Claw/hooks';
+
+import {IArm2Props, IArm3Props, IArmProps} from './types';
 
 /**
  * 單個箱子
@@ -10,45 +13,93 @@ import {IArmProps} from './types';
 const Arm = ({
     position,
     rotation,
-    args
-}: IArmProps) => {
-    return <mesh
-        position={position}
-        castShadow
-        receiveShadow
-        rotation={rotation}
-    >
-        <boxGeometry args={args} />
-        <meshStandardMaterial color="#999999" />
-    </mesh>;
+}: IArm3Props) => {
+    const ref1 = useRef<RapierRigidBody>(null); // prettier-ignore
+    const ref2 = useRef<RapierRigidBody>(null); // prettier-ignore
 
-    // return (
-    //     // <RigidBody
-    //     //     type="fixed"
-    //     //     position={position}
-    //     //     colliders="cuboid"
-    //     //     canSleep={false}
-    //     //     friction={0.3}
-    //     //     restitution={0.3}
-    //     //     userData={{tag: 'Arm'}}
-    //     //     onCollisionEnter={(e) => {
-    //     //         const tag = e.rigidBody?.userData;
-    //     //         // console.log('arm tag:', tag);
-    //     //         if (tag === 'Box' || tag === 'Plane') {
-    //     //             // 處理碰撞邏輯
-    //     //         }
-    //     //     }}
-    //     // >
-    //     <mesh
-    //         castShadow
-    //         receiveShadow
-    //         rotation={rotation}
-    //     >
-    //         <boxGeometry args={args} />
-    //         <meshStandardMaterial color="#999999" />
-    //     </mesh>
-    //     // </RigidBody>
-    // );
+    const arg1Height = 1.5;
+    const arg2Height = 2;
+
+    const arm1 = {
+        y: arg1Height / -2,
+        args: [.4, arg1Height, .2] as IArmProps['args'],
+    };
+    const arm2 = {
+        y: (arg1Height) + (arg2Height / -2) * .6,
+        args: [.4, arg2Height, .2] as IArmProps['args'],
+    };
+
+
+    const armProps: IArm2Props[] = [
+        {
+            key: '1',
+            position: [1, 1, 1],
+            args: arm1.args,
+            rotation: [-0.6, 0, 0]
+        },
+        {
+            key: '2',
+            position: [1, -.4, 1],
+            args: arm2.args,
+            rotation: [.5, 0, 0]
+        }
+    ];
+
+
+    const {createImpulseJoint} = useMyRopeJoint();
+
+    // useEffect(() => {
+    //     createImpulseJoint(
+    //         'spherical',
+    //         [
+    //             {ref: ref1, anchor: [.4, arg1Height, .2]},
+    //             {ref: ref2, anchor: [0,0,0]},
+    //         ]
+    //     );
+    // }, []);
+
+    return <group>
+        <RigidBody
+            ref={ref1}
+            type="kinematicPosition"
+            position={position}
+            rotation={rotation}
+            angularDamping={2}
+            linearDamping={2}
+            // type={dragged ? 'kinematicPosition' : 'dynamic'}
+        >
+            <mesh
+                key={armProps[0].key}
+                position={armProps[0].position}
+                rotation={armProps[0].rotation}
+                castShadow
+                receiveShadow
+            >
+                <boxGeometry args={armProps[0].args} />
+                <meshStandardMaterial color="#999999" />
+            </mesh>
+
+            <mesh
+                position={armProps[1].position}
+                rotation={armProps[1].rotation}
+                castShadow
+                receiveShadow
+            >
+                <boxGeometry args={armProps[1].args} />
+                <meshStandardMaterial color="red" />
+            </mesh>
+        </RigidBody>
+
+    </group>;
 };
 
+
+
+// const Arms = () => {
+//     return <group>
+//         <Arm position={[0.8, 1, 0.8]} rotation={[0, 0, 0.3]} />
+//     </group>;
+// };
+
 export default Arm;
+

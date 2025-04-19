@@ -7,7 +7,7 @@ import {Color} from 'three';
 
 import Boxes from '@/views/ClawMachine/_components/Boxes/Boxes';
 
-import Claw, {IClawRefProps} from './_components/Claw';
+import MyClaw, {IClawRefProps} from './_components/Claw';
 import Band from './_components/Claw/Band';
 import ControlPanel from './_components/ControlPanel';
 import GameInfo from './_components/GameInfo';

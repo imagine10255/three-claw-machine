@@ -5,71 +5,63 @@ import React, {ForwardedRef, forwardRef, RefObject, useEffect, useImperativeHand
 import * as THREE from 'three';
 import {Vector3} from 'three';
 
-import Arm from './Arm';
+import Arm, {IArmRefProps} from './Arm';
 import Cable from './Cable';
-import {EDirectionState, EGrabState, IArm4Props, IArmProps, IClawRefProps, TPosition, TRotation} from './types';
+import {EDirectionState, EGrabState, IArm4Props, IArmProps, TPosition, TRotation} from './types';
 
 const initY = 11;
 const maxCableLength = 20; // 最大绳子长度
 
 
-interface IProps {
-    ref?: ForwardedRef<RapierRigidBody>
-    position: [x: number, y: number, z: number]
+
+export interface IClawRefProps {
+    setGrab: (isGrab: boolean) => void
 }
 
 
-
-const Claw = () => {
-
-};
+interface IProps {
+    ref?: ForwardedRef<RapierRigidBody>
+    position: [x: number, y: number, z: number]
+    controlRef: RefObject<IArmRefProps|null>
+}
 
 
 /**
  * 爪子
  * @param ref
+ * @param controlRef
+ * @param position
  */
 const Claws = ({
     ref,
+    controlRef,
     position
 }: IProps) => {
+    const armRef = [
+        useRef<IArmRefProps>(null),
+        useRef<IArmRefProps>(null),
+        useRef<IArmRefProps>(null),
+    ];
 
-    const grabStateRef = useRef<EGrabState>(EGrabState.idle);
-
-    const [cableLength, setCableLength] = useState(0);
-    const clawPosition = useRef<[number, number, number]>([1, initY, 2]);
-
-    const clawRef = useRef<RapierRigidBody>(null);
-
-    const baseY = 10;
-    const base2Y = -1;
-    const arg1Height = 1.5;
-    const arg2Height = 2;
-
-    // 定义中心点
-    const centerPoint = [0, 0, 0];
-    // 定义爪子到中心点的距离
-    const clawRadius = 1.2;
-
-    const arm1 = {
-        y: arg1Height / -2,
-        args: [.4, arg1Height, .2],
-    };
-    const arm2 = {
-        y: (arg1Height * -1) + (arg2Height / -2) * .6,
-        args: [.4, arg2Height, .2],
-    };
 
     // 爪子手臂 - 围绕中心点旋转
     const armRotations: TRotation[] = [
-        // [0, 0, 0],
-        // [0, 2.2, 0],
-        // [0, 4.4, 0]
-        // 爪
         [0, 0, 0],
         [0, 2.2, 0],
         [0, 4.4, 0]
     ];
+
+
+    useImperativeHandle(controlRef, () => ({
+        setGrab,
+    }));
+
+
+    const setGrab = (isGrab: boolean) => {
+        armRef.forEach(row => {
+            row.current?.setGrab(isGrab);
+        });
+    };
 
 
     return (
@@ -103,6 +95,7 @@ const Claws = ({
             {/* 爪子手臂 */}
             {armRotations.map((rotation, i) => {
                 return <Arm
+                    controlRef={armRef[i]}
                     key={`arm-${i}`}
                     position={[0,-1.0,0]}
                     rotation={rotation}

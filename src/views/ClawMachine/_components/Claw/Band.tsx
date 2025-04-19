@@ -18,7 +18,7 @@ import {Vector3} from 'three';
 import {useMyRopeJoint} from '@/views/ClawMachine/_components/Claw/hooks';
 import {EDirectionState, EGrabState} from '@/views/ClawMachine/_components/Claw/types';
 
-import Claw from './Claw';
+import Claw, {IClawRefProps} from './Claw';
 
 extend({MeshLineGeometry, MeshLineMaterial});
 
@@ -30,6 +30,7 @@ const Band = () => {
     const j1 = useRef<RapierRigidBody>(null);
     const j2 = useRef<RapierRigidBody>(null);
     const card = useRef<RapierRigidBody>(null); // prettier-ignore
+    const clawControlRef = useRef<IClawRefProps>(null); // prettier-ignore
     const vec = new THREE.Vector3(), ang = new THREE.Vector3(), rot = new THREE.Vector3(), dir = new THREE.Vector3(); // prettier-ignore
     const {width, height} = useThree((state) => state.size);
     const [curve] = useState(() => new THREE.CatmullRomCurve3([new THREE.Vector3(), new THREE.Vector3(), new THREE.Vector3(), new THREE.Vector3()]));
@@ -80,9 +81,12 @@ const Band = () => {
                 if(grabStateRef.current === EGrabState.idle){
                     grabStateRef.current = EGrabState.down;
                     targetRopeLength.current = 8; // 设置目标长度为7
+                    clawControlRef.current?.setGrab(true);
+
                 }else if(grabStateRef.current === EGrabState.down){
                     grabStateRef.current = EGrabState.idle;
                     targetRopeLength.current = 1; // 设置目标长度为1
+                    clawControlRef.current?.setGrab(false);
                 }
             }
         };
@@ -134,17 +138,19 @@ const Band = () => {
             ], newLength);
         }
 
-        if (dragged) {
-            vec.set(state.pointer.x, state.pointer.y, 0.5).unproject(state.camera);
-            dir.copy(vec).sub(state.camera.position).normalize();
-            vec.add(dir.multiplyScalar(state.camera.position.length()))
-            ;[card, j1, j2, fixed].forEach((ref) => ref.current?.wakeUp());
-            card.current?.setNextKinematicTranslation({
-                x: vec.x - dragged.x,
-                y: vec.y - dragged.y,
-                z: vec.z - dragged.z
-            });
-        }
+        // if (dragged) {
+        //     vec.set(state.pointer.x, state.pointer.y, 0.5).unproject(state.camera);
+        //     dir.copy(vec).sub(state.camera.position).normalize();
+        //     vec.add(dir.multiplyScalar(state.camera.position.length()))
+        //     ;[card, j1, j2, fixed].forEach((ref) => ref.current?.wakeUp());
+        //     card.current?.setNextKinematicTranslation({
+        //         x: vec.x - dragged.x,
+        //         y: vec.y - dragged.y,
+        //         z: vec.z - dragged.z
+        //     });
+        // }
+
+
         if (fixed.current &&
             j2.current &&
             j1.current &&
@@ -259,6 +265,7 @@ const Band = () => {
 
                 <Claw
                     ref={card}
+                    controlRef={clawControlRef}
                     position={[1.5, 0, 0]}
                 />
 

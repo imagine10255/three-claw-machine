@@ -17,6 +17,7 @@ import {Vector3} from 'three';
 
 import {useMyRopeJoint} from '@/views/ClawMachine/_components/Claw/hooks';
 import {EDirectionState, EGrabState} from '@/views/ClawMachine/_components/Claw/types';
+
 import Claw from './Claw';
 
 extend({MeshLineGeometry, MeshLineMaterial});
@@ -78,7 +79,7 @@ const Band = () => {
                 type: 'spherical',
                 params: [
                     {ref: j3, anchor: [0,0,0]},
-                    {ref: card, anchor: [0, 1.45, 0]},
+                    {ref: card, anchor: [0, 0, 0]},
                 ],
             },
         ]);
@@ -278,37 +279,44 @@ const Band = () => {
                 <RigidBody position={[1.5, 0, 0]} ref={j3} angularDamping={2} linearDamping={2}>
                     <BallCollider args={[0.1]}/>
                 </RigidBody>
-                <RigidBody
-                    position={[2, 0, 0]}
-                    ref={card}
-                    angularDamping={2}
-                    linearDamping={2}
-                    // type={dragged ? 'kinematicPosition' : 'dynamic'}
-                    type="dynamic"
-                >
-                    <CuboidCollider args={[0.8, 1.125, 0.01]}/>
-                    <mesh
+                {/*<RigidBody*/}
+                {/*    position={[2, 0, 0]}*/}
+                {/*    ref={card}*/}
+                {/*    angularDamping={2}*/}
+                {/*    linearDamping={2}*/}
+                {/*    // type={dragged ? 'kinematicPosition' : 'dynamic'}*/}
+                {/*    type="dynamic"*/}
+                {/*>*/}
+                {/*    <CuboidCollider args={[0.8, 1.125, 0.01]}/>*/}
+                {/*    <mesh*/}
 
-                        // onPointerUp={(e: any) => (e.target.releasePointerCapture(e.pointerId), drag(false))}
-                        // onPointerDown={(e: any) => {
-                        //     if(card.current){
-                        //         return e.target.setPointerCapture(e.pointerId), drag(new THREE.Vector3().copy(e.point).sub(vec.copy(card.current.translation())));
-                        //     }
-                        // }}
-                    >
-                        <planeGeometry args={[0.8 * 2, 1.125 * 2]}/>
-                        <meshBasicMaterial transparent opacity={0.25} color="white" side={THREE.DoubleSide}/>
-                    </mesh>
-                </RigidBody>
+                {/*        // onPointerUp={(e: any) => (e.target.releasePointerCapture(e.pointerId), drag(false))}*/}
+                {/*        // onPointerDown={(e: any) => {*/}
+                {/*        //     if(card.current){*/}
+                {/*        //         return e.target.setPointerCapture(e.pointerId), drag(new THREE.Vector3().copy(e.point).sub(vec.copy(card.current.translation())));*/}
+                {/*        //     }*/}
+                {/*        // }}*/}
+                {/*    >*/}
+                {/*        <planeGeometry args={[0.8 * 2, 1.125 * 2]}/>*/}
+                {/*        <meshBasicMaterial transparent opacity={0.25} color="white" side={THREE.DoubleSide}/>*/}
+                {/*    </mesh>*/}
+                {/*</RigidBody>*/}
+
+                <Claw
+                    ref={card}
+                    position={[2, 0, 0]}
+                />
+
             </group>
+
+
             <mesh ref={band}>
                 <meshLineGeometry/>
-                <meshLineMaterial transparent opacity={0.25} color="white" depthTest={false}
-                    resolution={[width, height]} lineWidth={1}/>
+                <meshLineMaterial opacity={1} color="#000" depthTest={false}
+                    resolution={[width, height]} lineWidth={.2}/>
             </mesh>
 
-            
-            <Claw/>
+
         </>
     );
 };

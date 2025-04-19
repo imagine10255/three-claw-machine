@@ -14,7 +14,8 @@ const maxCableLength = 20; // 最大绳子长度
 
 
 interface IProps {
-    ref?: ForwardedRef<IClawRefProps>
+    ref?: ForwardedRef<RapierRigidBody>
+    position: [x: number, y: number, z: number]
 }
 
 
@@ -29,7 +30,8 @@ const Claw = () => {
  * @param ref
  */
 const Claws = ({
-    ref
+    ref,
+    position
 }: IProps) => {
 
     const grabStateRef = useRef<EGrabState>(EGrabState.idle);
@@ -97,16 +99,25 @@ const Claws = ({
     return (
 
         <RigidBody
-            ref={clawRef}
+            ref={ref}
             type="dynamic"
-            position={[clawPosition.current[0], initY - cableLength, clawPosition.current[2]]}
-            colliders="cuboid"
-            canSleep={false}
-            userData={{tag: 'Claw'}}
-            lockRotations // 锁定旋转
-            gravityScale={0} // 设置重力缩放为0，这样就不会受重力影响
-            friction={5.5} // 增加摩擦力
-            linearDamping={5.5} // 增加线性阻尼
+            position={position}
+            // colliders="cuboid"
+            // canSleep={false}
+            // userData={{tag: 'Claw'}}
+            // lockRotations // 锁定旋转
+            // gravityScale={0} // 设置重力缩放为0，这样就不会受重力影响
+            // friction={5.5} // 增加摩擦力
+            // linearDamping={5.5} // 增加线性阻尼
+
+
+            // position={[2, 0, 0]}
+            // ref={card}
+            angularDamping={2}
+            linearDamping={2}
+            // type={dragged ? 'kinematicPosition' : 'dynamic'}
+            // type="dynamic"
+
         >
 
             {/*<Arm*/}
@@ -123,19 +134,19 @@ const Claws = ({
                 castShadow
                 receiveShadow
             >
-                <cylinderGeometry args={[0.4, 0.4, 1, 32]} />
+                <cylinderGeometry args={[0.4, 0.4, .5, 32]} />
                 <meshStandardMaterial color="blue" />
             </mesh>
 
             <mesh
                 // position={armProps[0].position}
-                position={[0,-.8,0]}
+                position={[0,-.5,0]}
                 // rotation={[0,0,0]}
                 rotation={armProps[0].rotation}
                 castShadow
                 receiveShadow
             >
-                <cylinderGeometry args={[0.8, 0.4, .6, 32]} />
+                <cylinderGeometry args={[0.6, 0.4, .6, 32]} />
                 <meshStandardMaterial color="blue" />
             </mesh>
 
@@ -144,7 +155,7 @@ const Claws = ({
             {armProps.map((props, i) => {
                 return <Arm
                     key={`arm-${i}`}
-                    position={[0,-1.5,0]}
+                    position={[0,-1.0,0]}
                     rotation={props.rotation}
                 />;
             })}
